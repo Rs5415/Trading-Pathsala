@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-2 sm:gap-3 text-left focus:outline-none shrink-0 group cursor-pointer min-w-0"
           >
             <img
-              src="/trading_pathshala_official_logo.png"
+              src={`${import.meta.env.BASE_URL}trading_pathshala_official_logo.png`}
               alt="Trading Pathshala - Learn the Art of Trading"
               className="h-8 sm:h-12 w-auto object-contain max-w-[150px] sm:max-w-none"
             />
