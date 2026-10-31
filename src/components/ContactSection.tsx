@@ -60,25 +60,25 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ content, availab
   };
 
   return (
-    <section id="contact" className="py-24 bg-[#090909] border-b border-[#222222]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mb-16">
+    <section id="contact" className="py-16 sm:py-24 bg-[#090909] border-b border-[#222222] w-full max-w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
+        <div className="max-w-3xl mb-12 sm:mb-16">
           <div className="text-xs font-bold tracking-widest text-[#C5A34A] uppercase mb-2 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
             <span>Official Communications</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight uppercase">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight uppercase">
             Connect With Trading Pathshala
           </h2>
-          <p className="mt-3 text-[#A0A0A0] text-sm sm:text-base leading-relaxed font-light">
+          <p className="mt-3 text-[#A0A0A0] text-xs sm:text-base leading-relaxed font-light">
             Have questions about upcoming batches, syllabus scope, or which progression level fits your background? Connect directly with mentor Prashant Kumar Sinha.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full">
           {/* Direct Verified Details Column */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-[#121212] border border-[#222222] rounded-lg p-8 space-y-6">
+          <div className="lg:col-span-5 space-y-5 sm:space-y-6 w-full min-w-0">
+            <div className="bg-[#121212] border border-[#222222] rounded-lg p-5 sm:p-8 space-y-5 sm:space-y-6">
               <div className="border-b border-[#1C1C1C] pb-4">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[#737373] block mb-1">
                   Official Business Identity
@@ -209,8 +209,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ content, availab
           </div>
 
           {/* Form Column */}
-          <div className="lg:col-span-7">
-            <div className="bg-[#121212] border border-[#222222] rounded-lg p-8 sm:p-10 shadow-xl">
+          <div className="lg:col-span-7 w-full min-w-0">
+            <div className="bg-[#121212] border border-[#222222] rounded-lg p-5 sm:p-8 lg:p-10 shadow-xl w-full">
               {submittedSuccess ? (
                 <div className="text-center py-12 space-y-4">
                   <div className="w-14 h-14 bg-[#C5A34A]/20 border border-[#C5A34A]/30 rounded-full flex items-center justify-center text-[#C5A34A] mx-auto">

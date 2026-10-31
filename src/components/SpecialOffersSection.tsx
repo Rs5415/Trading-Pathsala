@@ -28,8 +28,8 @@ export const SpecialOffersSection: React.FC<SpecialOffersSectionProps> = ({
   }
 
   return (
-    <section id="offers" className="py-24 bg-[#090909] border-b border-[#222222]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="offers" className="py-16 sm:py-24 bg-[#090909] border-b border-[#222222] w-full max-w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
         <div className="max-w-3xl mb-12">
           <div className="text-xs font-bold tracking-widest text-[#C5A34A] uppercase mb-2 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />

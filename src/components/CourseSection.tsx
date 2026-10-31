@@ -34,25 +34,25 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
   ];
 
   return (
-    <section id="courses" className="py-24 bg-[#0E0E0E] border-b border-[#222222]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="courses" className="py-16 sm:py-24 bg-[#0E0E0E] border-b border-[#222222] w-full max-w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-12">
+          <div className="min-w-0">
             <div className="text-xs font-bold tracking-widest text-[#C5A34A] uppercase mb-2 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
               <span>Structured Educational Roadmaps</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight uppercase">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight uppercase">
               Trading Programs & Courses
             </h2>
-            <p className="mt-2 text-[#A0A0A0] text-sm sm:text-base max-w-2xl font-light">
+            <p className="mt-2 text-[#A0A0A0] text-xs sm:text-base max-w-2xl font-light">
               From absolute market fundamentals to quantitative price action and derivatives risk management. Select the curriculum tailored to your experience.
             </p>
           </div>
 
           {/* Search box */}
-          <div className="relative w-full md:w-72">
+          <div className="relative w-full md:w-72 shrink-0">
             <Search className="w-4 h-4 text-[#737373] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
@@ -64,7 +64,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#737373] hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#737373] hover:text-white cursor-pointer"
               >
                 Clear
               </button>
@@ -73,7 +73,7 @@ export const CourseSection: React.FC<CourseSectionProps> = ({
         </div>
 
         {/* Category Filter Tabs */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-2 mb-8 sm:mb-10 overflow-x-auto pb-2 scrollbar-none touch-pan-x w-full max-w-full min-w-0">
           {categories.map((cat) => {
             const count =
               cat === 'All'

@@ -46,23 +46,23 @@ export const LearningResourcesSection: React.FC<LearningResourcesSectionProps> =
   };
 
   return (
-    <section id="resources" className="py-24 bg-[#0E0E0E] border-b border-[#222222]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mb-12">
+    <section id="resources" className="py-16 sm:py-24 bg-[#0E0E0E] border-b border-[#222222] w-full max-w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
+        <div className="max-w-3xl mb-10 sm:mb-12">
           <div className="text-xs font-bold tracking-widest text-[#C5A34A] uppercase mb-2 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
             <span>Open Access Library</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight uppercase">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight uppercase">
             Learning Resources & Study Guides
           </h2>
-          <p className="mt-3 text-[#A0A0A0] text-sm sm:text-base leading-relaxed font-light">
+          <p className="mt-3 text-[#A0A0A0] text-xs sm:text-base leading-relaxed font-light">
             High-yield reference notes, market structure handbooks, and candlestick checklists prepared to accelerate your independent market comprehension.
           </p>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-2 mb-8 sm:mb-10 overflow-x-auto pb-2 scrollbar-none touch-pan-x w-full max-w-full min-w-0">
           {categories.map((cat) => {
             const isSelected = selectedCategory === cat;
             return (
@@ -190,19 +190,19 @@ export const LearningResourcesSection: React.FC<LearningResourcesSectionProps> =
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-[#222222] bg-[#0A0A0A] flex items-center justify-between">
-              <span className="text-xs font-mono text-[#555555]">Updated: {readingResource.updatedAt}</span>
-              <div className="flex items-center gap-3">
+            <div className="px-4 sm:px-6 py-4 border-t border-[#222222] bg-[#0A0A0A] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <span className="text-xs font-mono text-[#555555] text-center sm:text-left">Updated: {readingResource.updatedAt}</span>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <button
                   onClick={() => handleDownload(readingResource)}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-[#171717] hover:bg-[#222222] border border-[#2A2A2A] rounded flex items-center gap-1.5"
+                  className="px-4 py-2.5 sm:py-2 text-xs font-bold uppercase tracking-wider text-white bg-[#171717] hover:bg-[#222222] border border-[#2A2A2A] rounded flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5 text-[#C5A34A]" />
                   <span>Download Document</span>
                 </button>
                 <button
                   onClick={() => setReadingResource(null)}
-                  className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-[#090909] bg-[#C5A34A] hover:bg-[#E2C878] rounded"
+                  className="px-5 py-2.5 sm:py-2 text-xs font-bold uppercase tracking-wider text-[#090909] bg-[#C5A34A] hover:bg-[#E2C878] rounded cursor-pointer text-center"
                 >
                   Close Reader
                 </button>

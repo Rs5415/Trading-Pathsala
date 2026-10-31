@@ -169,12 +169,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090909] text-white flex flex-col font-sans selection:bg-[#C5A34A]/30 selection:text-[#E2C878]">
+    <div className="min-h-screen bg-[#090909] text-white flex flex-col font-sans selection:bg-[#C5A34A]/30 selection:text-[#E2C878] w-full max-w-full overflow-x-hidden">
       {/* Top Announcement Bar */}
       {content.announcementText && (
-        <div className="bg-[#121212] border-b border-[#222222] text-[11px] sm:text-xs py-2 px-4 text-center text-[#A0A0A0] flex items-center justify-center gap-2">
+        <div className="bg-[#121212] border-b border-[#222222] text-[10px] sm:text-xs py-2 px-3 sm:px-4 text-center text-[#A0A0A0] flex items-center justify-center gap-2 w-full max-w-full overflow-hidden">
           <Bell className="w-3.5 h-3.5 text-[#C5A34A] shrink-0" />
-          <span className="font-medium text-white">{content.announcementText}</span>
+          <span className="font-medium text-white truncate max-w-[270px] sm:max-w-none">{content.announcementText}</span>
           <span className="hidden md:inline text-[#333333]">·</span>
           <button
             onClick={() => handleNavigate('courses')}
@@ -273,7 +273,7 @@ export default function App() {
         href="https://wa.me/918987599799?text=Hello%20Prashant%20Sir,%20I%20am%20interested%20in%20learning%20the%20art%20of%20trading%20with%20Trading%20Pathshala."
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-40 bg-[#25D366] hover:bg-[#20ba5a] text-white p-3.5 rounded-full shadow-2xl flex items-center gap-2 group transition-all duration-200 hover:scale-105"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-[#25D366] hover:bg-[#20ba5a] text-white p-3 sm:p-3.5 rounded-full shadow-2xl flex items-center gap-2 group transition-all duration-200 hover:scale-105 cursor-pointer"
         title="Chat with Prashant Kumar Sinha on WhatsApp"
         aria-label="Chat on WhatsApp"
       >

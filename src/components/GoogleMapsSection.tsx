@@ -57,15 +57,15 @@ export const GoogleMapsSection: React.FC<GoogleMapsSectionProps> = ({ content })
         {/* Main Grid: Info Card + Interactive Map Frame */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Official Address & Navigation Card (5 columns) */}
-          <div className="lg:col-span-5 flex flex-col justify-between bg-[#121212] border border-[#262626] rounded-xl p-7 sm:p-8 shadow-2xl relative">
-            <div className="space-y-6">
+          <div className="lg:col-span-5 flex flex-col justify-between bg-[#121212] border border-[#262626] rounded-xl p-5 sm:p-8 shadow-2xl relative w-full min-w-0">
+            <div className="space-y-5 sm:space-y-6">
               {/* Badge & Title */}
-              <div className="border-b border-[#1F1F1F] pb-5">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C5A34A]/10 border border-[#C5A34A]/30 text-[#E2C878] text-[11px] font-mono uppercase tracking-wider mb-3">
+              <div className="border-b border-[#1F1F1F] pb-4 sm:pb-5">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#C5A34A]/10 border border-[#C5A34A]/30 text-[#E2C878] text-[10px] sm:text-[11px] font-mono uppercase tracking-wider mb-2.5">
                   <Compass className="w-3.5 h-3.5 text-[#C5A34A]" />
                   <span>Physical Learning Centre</span>
                 </div>
-                <h3 className="text-xl font-bold text-white tracking-tight uppercase">
+                <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight uppercase">
                   Official Business Address
                 </h3>
                 <p className="text-xs text-[#737373] mt-1">
@@ -74,13 +74,13 @@ export const GoogleMapsSection: React.FC<GoogleMapsSectionProps> = ({ content })
               </div>
 
               {/* Exact 4-Line Address Display */}
-              <div className="bg-[#171717] border border-[#292929] rounded-lg p-5 relative group hover:border-[#C5A34A]/40 transition-colors">
-                <div className="flex items-start gap-3.5">
-                  <div className="p-2.5 rounded bg-[#090909] text-[#C5A34A] border border-[#222222] shrink-0 mt-0.5">
-                    <Building2 className="w-5 h-5" />
+              <div className="bg-[#171717] border border-[#292929] rounded-lg p-4 sm:p-5 relative group hover:border-[#C5A34A]/40 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded bg-[#090909] text-[#C5A34A] border border-[#222222] shrink-0 mt-0.5">
+                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <div className="space-y-1 flex-1">
-                    <p className="text-sm font-bold text-white tracking-wide">
+                  <div className="space-y-0.5 sm:space-y-1 flex-1 min-w-0">
+                    <p className="text-sm font-bold text-white tracking-wide truncate">
                       {officialAddressLines[0]}
                     </p>
                     <p className="text-xs text-[#D4D4D4] leading-relaxed">
@@ -96,20 +96,20 @@ export const GoogleMapsSection: React.FC<GoogleMapsSectionProps> = ({ content })
                 </div>
 
                 {/* Quick Copy Button */}
-                <div className="mt-4 pt-3.5 border-t border-[#222222] flex items-center justify-between">
-                  <span className="text-[11px] text-[#737373] font-mono">
+                <div className="mt-3.5 pt-3 border-t border-[#222222] flex items-center justify-between">
+                  <span className="text-[10px] sm:text-[11px] text-[#737373] font-mono">
                     Postal Code: 814112
                   </span>
                   <button
                     onClick={handleCopyAddress}
                     type="button"
-                    className="inline-flex items-center gap-1.5 text-xs text-[#A0A0A0] hover:text-[#E2C878] transition-colors cursor-pointer font-medium"
+                    className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-[#A0A0A0] hover:text-[#E2C878] transition-colors cursor-pointer font-medium"
                     title="Copy full address to clipboard"
                   >
                     {copied ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400 font-semibold">Address Copied!</span>
+                        <span className="text-emerald-400 font-semibold">Copied!</span>
                       </>
                     ) : (
                       <>
@@ -122,92 +122,94 @@ export const GoogleMapsSection: React.FC<GoogleMapsSectionProps> = ({ content })
               </div>
 
               {/* Landmark & Verification Note */}
-              <div className="space-y-2.5 text-xs text-[#A0A0A0]">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
+              <div className="space-y-2 text-xs text-[#A0A0A0]">
+                <div className="flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A] mt-1.5 shrink-0" />
                   <span><strong>Landmark:</strong> Mahadev Inn 3rd Floor, near Shivganga Muhalla & Jalsar Road</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A] shrink-0" />
                   <span><strong>Mentor on Site:</strong> Prashant Kumar Sinha</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
-                  <span><strong>Business Category:</strong> Financial Service, Financial Planner</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A] shrink-0" />
+                  <span><strong>Category:</strong> Financial Service, Financial Planner</span>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons: Direct Google Maps Navigation */}
-            <div className="mt-8 pt-6 border-t border-[#1F1F1F] space-y-3">
+            <div className="mt-6 pt-5 sm:mt-8 sm:pt-6 border-t border-[#1F1F1F] space-y-3">
               {/* Working Directions Link */}
               <a
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#090909] bg-[#C5A34A] hover:bg-[#E2C878] rounded-lg transition-all duration-200 shadow-lg shadow-[#C5A34A]/10 group cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-xs sm:text-sm font-bold uppercase tracking-wider text-[#090909] bg-[#C5A34A] hover:bg-[#E2C878] rounded-lg transition-all duration-200 shadow-lg shadow-[#C5A34A]/10 group cursor-pointer text-center"
               >
-                <Navigation className="w-4 h-4 fill-current group-hover:rotate-12 transition-transform" />
+                <Navigation className="w-4 h-4 fill-current group-hover:rotate-12 transition-transform shrink-0" />
                 <span>Get Directions on Google Maps</span>
-                <ExternalLink className="w-3.5 h-3.5 ml-0.5 opacity-80" />
+                <ExternalLink className="w-3.5 h-3.5 ml-0.5 opacity-80 shrink-0" />
               </a>
 
-              {/* Direct View Location Button & Phone */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Direct View Location Button & WhatsApp */}
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <a
                   href={viewOnMapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold text-white bg-[#1A1A1A] hover:bg-[#222222] border border-[#2E2E2E] hover:border-[#C5A34A]/50 rounded-lg transition-colors text-center"
+                  className="inline-flex items-center justify-center gap-1.5 px-2.5 py-2.5 text-[11px] sm:text-xs font-semibold text-white bg-[#1A1A1A] hover:bg-[#222222] border border-[#2E2E2E] hover:border-[#C5A34A]/50 rounded-lg transition-colors text-center truncate"
                 >
-                  <MapPin className="w-3.5 h-3.5 text-[#C5A34A]" />
-                  <span>Open in Maps</span>
+                  <MapPin className="w-3.5 h-3.5 text-[#C5A34A] shrink-0" />
+                  <span className="truncate">Open Maps</span>
                 </a>
 
                 <a
                   href="https://wa.me/918987599799?text=Hello%20Prashant%20Sir,%20I%20am%20visiting%20Trading%20Pathshala%20office%20at%20Deoghar."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold text-white bg-[#1A1A1A] hover:bg-[#222222] border border-[#2E2E2E] hover:border-[#25D366]/50 rounded-lg transition-colors text-center"
+                  className="inline-flex items-center justify-center gap-1.5 px-2.5 py-2.5 text-[11px] sm:text-xs font-semibold text-white bg-[#1A1A1A] hover:bg-[#222222] border border-[#2E2E2E] hover:border-[#25D366]/50 rounded-lg transition-colors text-center truncate"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
-                  <span>Notify Visit</span>
+                  <MessageCircle className="w-3.5 h-3.5 text-[#25D366] shrink-0" />
+                  <span className="truncate">Notify Visit</span>
                 </a>
               </div>
             </div>
           </div>
 
           {/* Interactive Google Map Preview Container (7 columns) */}
-          <div className="lg:col-span-7 bg-[#121212] border border-[#262626] rounded-xl overflow-hidden shadow-2xl flex flex-col min-h-[460px]">
+          <div className="lg:col-span-7 bg-[#121212] border border-[#262626] rounded-xl overflow-hidden shadow-2xl flex flex-col min-h-[360px] sm:min-h-[460px] w-full min-w-0">
             {/* Map Frame Top Bar */}
-            <div className="bg-[#171717] border-b border-[#222222] px-5 py-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-                <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-                <span className="text-[11px] font-mono text-[#737373] ml-2 truncate">
-                  maps.google.com · Deoghar, Jharkhand 814112
+            <div className="bg-[#171717] border-b border-[#222222] px-3 sm:px-5 py-3 flex items-center justify-between gap-2 overflow-hidden w-full">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-hidden">
+                <div className="flex items-center gap-1 shrink-0">
+                  <div className="w-2 h-2 rounded-full bg-rose-500/80" />
+                  <div className="w-2 h-2 rounded-full bg-amber-500/80" />
+                  <div className="w-2 h-2 rounded-full bg-emerald-500/80" />
+                </div>
+                <span className="text-[10px] sm:text-[11px] font-mono text-[#737373] truncate">
+                  Deoghar, Jharkhand 814112
                 </span>
               </div>
               <a
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[11px] font-mono font-bold text-[#C5A34A] hover:text-[#E2C878] inline-flex items-center gap-1"
+                className="text-[10px] sm:text-[11px] font-mono font-bold text-[#C5A34A] hover:text-[#E2C878] inline-flex items-center gap-1 shrink-0 whitespace-nowrap"
               >
-                <span>Live GPS Route</span>
+                <span>GPS Route</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             </div>
 
             {/* Embedded Google Map */}
-            <div className="relative flex-1 w-full min-h-[380px] bg-[#0A0A0A]">
+            <div className="relative flex-1 w-full min-h-[300px] sm:min-h-[380px] bg-[#0A0A0A]">
               <iframe
                 title="Trading Pathshala Office Location on Google Maps"
                 src={mapEmbedUrl}
                 width="100%"
                 height="100%"
-                style={{ border: 0, minHeight: '380px' }}
+                style={{ border: 0, minHeight: '300px' }}
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
@@ -215,12 +217,12 @@ export const GoogleMapsSection: React.FC<GoogleMapsSectionProps> = ({ content })
               />
 
               {/* Floating Pin Overlay Card */}
-              <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs bg-[#090909]/95 backdrop-blur-md border border-[#C5A34A]/40 rounded-lg p-3.5 shadow-2xl pointer-events-none">
-                <div className="flex items-center gap-2 mb-1">
-                  <MapPin className="w-4 h-4 text-[#C5A34A] shrink-0" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">Trading Pathshala</span>
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-auto sm:max-w-xs bg-[#090909]/95 backdrop-blur-md border border-[#C5A34A]/40 rounded-lg p-2.5 sm:p-3.5 shadow-2xl pointer-events-none">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <MapPin className="w-3.5 h-3.5 text-[#C5A34A] shrink-0" />
+                  <span className="text-[11px] sm:text-xs font-bold text-white uppercase tracking-wider">Trading Pathshala</span>
                 </div>
-                <p className="text-[11px] text-[#A0A0A0] leading-snug">
+                <p className="text-[10px] sm:text-[11px] text-[#A0A0A0] leading-snug">
                   3rd Floor, Mahadev Inn, Jalsar Road, Shivganga Muhalla, Deoghar, Jharkhand – 814112
                 </p>
               </div>

@@ -10,14 +10,14 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ content, onNavigate, onOpenLegal }) => {
   return (
-    <footer className="bg-[#090909] text-[#A0A0A0] border-t border-[#222222] text-xs">
+    <footer className="bg-[#090909] text-[#A0A0A0] border-t border-[#222222] text-xs w-full max-w-full overflow-hidden">
       {/* Financial Risk Disclaimer Strip */}
-      <div className="bg-[#121212] border-b border-[#1C1C1C] py-6 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 text-[#A0A0A0]">
+      <div className="bg-[#121212] border-b border-[#1C1C1C] py-5 sm:py-6 px-4 sm:px-6 lg:px-8 w-full max-w-full">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 text-[#A0A0A0]">
           <div className="p-2 rounded bg-[#1C1C1C] border border-[#2E2E2E] text-[#C5A34A] shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">
               Educational & Financial Risk Disclaimer
             </h4>
@@ -28,15 +28,15 @@ export const Footer: React.FC<FooterProps> = ({ content, onNavigate, onOpenLegal
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 w-full max-w-full min-w-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
           {/* Brand & Mission column */}
-          <div className="lg:col-span-2 space-y-4">
+          <div className="lg:col-span-2 space-y-4 min-w-0">
             <div className="flex items-center gap-3">
               <img
                 src="/trading_pathshala_official_logo.png"
                 alt="Trading Pathshala - Learn the Art of Trading"
-                className="h-10 sm:h-12 w-auto object-contain"
+                className="h-8 sm:h-12 w-auto object-contain max-w-[180px] sm:max-w-none"
               />
             </div>
             <p className="text-[#A0A0A0] text-xs leading-relaxed max-w-sm font-light">

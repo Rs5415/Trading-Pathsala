@@ -35,38 +35,38 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="sticky top-0 z-50 bg-[#090909]/95 backdrop-blur-md border-b border-[#222222]">
       {/* Top micro-bar for direct contact & official handles */}
-      <div className="bg-[#121212] border-b border-[#1f1f1f] text-xs text-[#A0A0A0] py-1.5 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="bg-[#121212] border-b border-[#1f1f1f] text-xs text-[#A0A0A0] py-1.5 px-3 sm:px-6 lg:px-8 w-full max-w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <a
               href="tel:+918987599799"
-              className="hover:text-[#C5A34A] transition-colors flex items-center gap-1.5 text-[11px] sm:text-xs"
+              className="hover:text-[#C5A34A] transition-colors flex items-center gap-1.5 text-[11px] sm:text-xs shrink-0"
             >
               <Phone className="w-3 h-3 text-[#C5A34A]" />
               <span className="font-mono text-white tracking-wide">+91 89875 99799</span>
             </a>
-            <span className="hidden sm:inline text-[#333333]">|</span>
-            <span className="hidden sm:inline text-[11px] text-[#A0A0A0]">
+            <span className="hidden md:inline text-[#333333]">|</span>
+            <span className="hidden md:inline text-[11px] text-[#A0A0A0] truncate">
               Mentor: <strong className="text-white font-medium">Prashant Kumar Sinha</strong>
             </span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex items-center gap-2.5 sm:gap-4 text-[11px] shrink-0">
             <a
               href="https://wa.me/918987599799"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#C5A34A] hover:text-[#E2C878] transition-colors flex items-center gap-1 font-medium"
+              className="text-[#C5A34A] hover:text-[#E2C878] transition-colors flex items-center gap-1 font-medium whitespace-nowrap"
             >
               <MessageCircle className="w-3 h-3" />
-              <span>WhatsApp Us</span>
+              <span>WhatsApp</span>
             </a>
-            <span className="text-[#333333]">|</span>
+            <span className="text-[#333333] hidden sm:inline">|</span>
             <a
               href="https://www.instagram.com/tradingpathsala/"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#C5A34A] transition-colors font-medium text-white"
+              className="hover:text-[#C5A34A] transition-colors font-medium text-white hidden sm:inline whitespace-nowrap"
             >
               @tradingpathsala
             </a>
@@ -75,17 +75,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-6 h-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full max-w-full">
+        <div className="flex items-center justify-between gap-2 sm:gap-6 h-16 sm:h-20">
           {/* Official Brand Logo */}
           <button
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-3 text-left focus:outline-none shrink-0 group cursor-pointer"
+            className="flex items-center gap-2 sm:gap-3 text-left focus:outline-none shrink-0 group cursor-pointer min-w-0"
           >
             <img
               src="/trading_pathshala_official_logo.png"
               alt="Trading Pathshala - Learn the Art of Trading"
-              className="h-10 sm:h-12 w-auto object-contain"
+              className="h-8 sm:h-12 w-auto object-contain max-w-[150px] sm:max-w-none"
             />
           </button>
 
@@ -131,27 +131,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Mobile menu triggers */}
-          <div className="flex xl:hidden items-center gap-2">
+          <div className="flex xl:hidden items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => onOpenEnquiry('Join Now')}
-              className="sm:hidden px-3 py-1.5 text-[11px] font-bold uppercase text-[#090909] bg-[#C5A34A] rounded"
+              className="px-2.5 py-1.5 sm:px-3 text-[10px] sm:text-[11px] font-bold uppercase text-[#090909] bg-[#C5A34A] hover:bg-[#E2C878] rounded transition-colors whitespace-nowrap"
             >
               Join Now
             </button>
             <button
               onClick={onOpenAdmin}
               title="Admin Portal"
-              className="p-2 text-[#737373] hover:text-[#C5A34A] rounded border border-[#262626]"
+              className="p-1.5 sm:p-2 text-[#737373] hover:text-[#C5A34A] rounded border border-[#262626]"
               aria-label="Admin Portal"
             >
               <Shield className="w-4 h-4" />
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-white hover:text-[#C5A34A] rounded hover:bg-[#171717] focus:outline-none"
+              className="p-1.5 sm:p-2 text-white hover:text-[#C5A34A] rounded hover:bg-[#171717] focus:outline-none"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
           </div>
         </div>

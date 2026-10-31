@@ -28,8 +28,8 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
     .slice(0, 2);
 
   return (
-    <div className="py-12 bg-[#090909] text-white min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div className="py-8 sm:py-12 bg-[#090909] text-white min-h-screen w-full max-w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-12 w-full max-w-full min-w-0">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-3 text-xs text-[#737373]">
           <button

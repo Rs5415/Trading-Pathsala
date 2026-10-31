@@ -263,14 +263,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#090909] text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#090909] text-white flex flex-col font-sans w-full max-w-full overflow-x-hidden">
       {/* Admin Top Bar */}
-      <header className="bg-[#121212] border-b border-[#222222] px-4 sm:px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="bg-[#121212] border-b border-[#222222] px-4 sm:px-8 py-3.5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full max-w-full">
+        <div className="flex items-center gap-3 min-w-0">
           <img
             src="/trading_pathshala_official_logo.png"
             alt="Trading Pathshala"
-            className="h-8 w-auto object-contain"
+            className="h-7 sm:h-8 w-auto object-contain shrink-0"
           />
           <div>
             <h1 className="text-sm sm:text-base font-bold text-white flex items-center gap-2 uppercase tracking-wider">

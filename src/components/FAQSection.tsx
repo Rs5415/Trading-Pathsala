@@ -32,8 +32,8 @@ export const FAQSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-24 bg-[#090909] border-b border-[#222222]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 sm:py-24 bg-[#090909] border-b border-[#222222] w-full max-w-full overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#C5A34A] uppercase mb-2">
             <HelpCircle className="w-4 h-4" />
