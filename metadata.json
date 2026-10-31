@@ -1,0 +1,8 @@
+{
+  "name": "Trading Pathshala - Stock Market Education & Trading Learning",
+  "description": "Explore structured stock market education, practical technical analysis, learning resources, and risk-managed trading concepts designed for your learning journey.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
