@@ -143,7 +143,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenEnquiry }) => {
             <div className="relative rounded-xl overflow-hidden border border-[#262626] bg-[#121212] shadow-2xl w-full">
               {/* Image asset */}
               <img
-                src={`${import.meta.env.BASE_URL}assets/images/hero_trading_market_1793416378138.jpg`}
+                src={heroImage}
                 alt="Trading Pathshala professional multi-display market terminal"
                 className="w-full h-[280px] sm:h-[420px] lg:h-[460px] object-cover object-center"
                 loading="eager"
