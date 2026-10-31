@@ -1,4 +1,5 @@
 import React from 'react';
+import heroImage from '../assets/images/hero_trading_market_1793416378138.jpg';
 import { ArrowRight, Phone, MessageCircle, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { PageView } from '../types';
 
