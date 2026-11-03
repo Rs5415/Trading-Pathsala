@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { WebsiteContent } from '../types';
 import { submitEnquiry } from '../services/storage';
-import { Phone, MessageCircle, Instagram, User, Send, CheckCircle2, ShieldCheck, AlertCircle, MapPin, Navigation, ExternalLink } from 'lucide-react';
+import { Mail, Phone, MessageCircle, MapPin, Send, CheckCircle2 } from 'lucide-react';
 
 interface ContactSectionProps {
   content: WebsiteContent;
@@ -12,335 +12,280 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ content, availab
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    courseName: availableCourses[0] || 'General Inquiry',
+    email: '',
+    courseName: availableCourses[0] || 'Index Option Buying',
     message: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submittedSuccess, setSubmittedSuccess] = useState(false);
-
-  const validate = () => {
-    const errs: Record<string, string> = {};
-    if (!formData.name.trim() || formData.name.trim().length < 2) {
-      errs.name = 'Please enter your full name (minimum 2 characters).';
-    }
-    const cleanPhone = formData.phone.replace(/[^0-9]/g, '');
-    if (cleanPhone.length < 10) {
-      errs.phone = 'Please enter a valid 10-digit mobile number.';
-    }
-    if (!formData.message.trim() || formData.message.trim().length < 3) {
-      errs.message = 'Please provide a brief query or your trading experience.';
-    }
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
+  const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
 
-    setIsSubmitting(true);
-    setTimeout(() => {
-      submitEnquiry({
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
-        courseName: formData.courseName,
-        message: formData.message.trim(),
-      });
-      setIsSubmitting(false);
-      setSubmittedSuccess(true);
-      setFormData({
-        name: '',
-        phone: '',
-        courseName: availableCourses[0] || 'General Inquiry',
-        message: '',
-      });
-    }, 400);
+    if (!formData.name.trim() || !formData.phone.trim() || !formData.email.trim()) {
+      setErrorMsg('Please enter your name, phone number, and email.');
+      return;
+    }
+
+    submitEnquiry({
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      courseName: formData.courseName,
+      message: formData.message.trim(),
+    });
+
+    setSubmitted(true);
+    setErrorMsg(null);
   };
 
+  const whatsappLink = `https://wa.me/918987599799?text=${encodeURIComponent(
+    `Hello, I would like to enquire about Trading Pathsala courses.\nName: ${formData.name || 'Learner'}\nPhone: ${formData.phone}\nCourse: ${formData.courseName}\nMessage: ${formData.message || 'Please provide upcoming batch details.'}`
+  )}`;
+
   return (
-    <section id="contact" className="py-16 sm:py-24 bg-[#090909] border-b border-[#222222] w-full max-w-full overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full max-w-full min-w-0">
-        <div className="max-w-3xl mb-12 sm:mb-16">
-          <div className="text-xs font-bold tracking-widest text-[#C5A34A] uppercase mb-2 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#C5A34A]" />
-            <span>Official Communications</span>
+    <section id="contact" className="py-16 sm:py-20 bg-gray-50 border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section Heading */}
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 space-y-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#174D32]">
+            Get In Touch
           </div>
-          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight uppercase">
-            Connect With Trading Pathshala
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+            Contact Us
           </h2>
-          <p className="mt-3 text-[#A0A0A0] text-xs sm:text-base leading-relaxed font-light">
-            Have questions about upcoming batches, syllabus scope, or which progression level fits your background? Connect directly with mentor Prashant Kumar Sinha.
+          <p className="text-base text-gray-600">
+            Reach out directly for admissions, course queries, or schedule consultations.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 w-full">
-          {/* Direct Verified Details Column */}
-          <div className="lg:col-span-5 space-y-5 sm:space-y-6 w-full min-w-0">
-            <div className="bg-[#121212] border border-[#222222] rounded-lg p-5 sm:p-8 space-y-5 sm:space-y-6">
-              <div className="border-b border-[#1C1C1C] pb-4">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#737373] block mb-1">
-                  Official Business Identity
-                </span>
-                <h3 className="text-xl font-bold text-white uppercase tracking-tight">
-                  Trading Pathshala
-                </h3>
-                <span className="text-xs text-[#C5A34A] font-mono">Financial Service · Financial Planner</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left: Contact Details Card */}
+          <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-xs space-y-6">
+            <h3 className="text-xl font-bold text-gray-900">Contact Details</h3>
+
+            <div className="space-y-5 text-sm">
+              {/* Email */}
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 text-[#174D32] border border-gray-200 flex items-center justify-center shrink-0">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase">Official Email</div>
+                  <a
+                    href="mailto:support@tradingpathsala.in"
+                    className="font-bold text-gray-900 hover:text-[#174D32] hover:underline break-all"
+                  >
+                    support@tradingpathsala.in
+                  </a>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                {/* Contact Person */}
-                <div className="flex items-start gap-3.5 p-3.5 rounded bg-[#171717] border border-[#262626]">
-                  <div className="p-2 rounded bg-[#090909] text-[#C5A34A] shrink-0">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase text-[#737373] block">
-                      Contact Person & Mentor
-                    </span>
-                    <span className="text-sm font-bold text-white">
-                      Prashant Kumar Sinha
-                    </span>
-                  </div>
+              {/* Phone */}
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 text-[#174D32] border border-gray-200 flex items-center justify-center shrink-0">
+                  <Phone className="w-5 h-5" />
                 </div>
+                <div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase">Phone Number</div>
+                  <a
+                    href="tel:+918987599799"
+                    className="font-bold text-gray-900 hover:text-[#174D32] hover:underline"
+                  >
+                    +91 89875 99799
+                  </a>
+                  <div className="text-xs text-gray-500">Contact: Prashant Kumar Sinha</div>
+                </div>
+              </div>
 
-                {/* Click-to-Call */}
-                <a
-                  href="tel:+918987599799"
-                  className="flex items-start gap-3.5 p-3.5 rounded bg-[#171717] hover:bg-[#1E1E1E] border border-[#262626] hover:border-[#C5A34A]/50 transition-colors group cursor-pointer"
-                >
-                  <div className="p-2 rounded bg-[#090909] text-[#C5A34A] shrink-0 group-hover:scale-110 transition-transform">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-[10px] font-mono uppercase text-[#737373] block">
-                      Official Phone (Click to Call)
-                    </span>
-                    <span className="text-sm font-mono font-bold text-white group-hover:text-[#C5A34A] transition-colors">
-                      +91 89875 99799
-                    </span>
-                  </div>
-                </a>
+              {/* WhatsApp */}
+              <div className="flex items-start gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 flex items-center justify-center shrink-0">
+                  <MessageCircle className="w-5 h-5 fill-current" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase">WhatsApp</div>
+                  <a
+                    href="https://wa.me/918987599799"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-gray-900 hover:text-[#174D32] hover:underline"
+                  >
+                    +91 89875 99799
+                  </a>
+                  <div className="text-xs text-gray-500">Direct WhatsApp desk support</div>
+                </div>
+              </div>
 
-                {/* WhatsApp Enquiry Button */}
-                <a
-                  href="https://wa.me/918987599799"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3.5 p-3.5 rounded bg-[#171717] hover:bg-[#1E1E1E] border border-[#262626] hover:border-[#C5A34A]/50 transition-colors group cursor-pointer"
-                >
-                  <div className="p-2 rounded bg-[#090909] text-[#C5A34A] shrink-0 group-hover:scale-110 transition-transform">
-                    <MessageCircle className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-[10px] font-mono uppercase text-[#737373] block">
-                      Direct WhatsApp Desk
-                    </span>
-                    <span className="text-sm font-mono font-bold text-white group-hover:text-[#C5A34A] transition-colors">
-                      +91 89875 99799 (Chat Now)
-                    </span>
-                  </div>
-                </a>
-
-                {/* Instagram Profile Link */}
-                <a
-                  href="https://www.instagram.com/tradingpathsala/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3.5 p-3.5 rounded bg-[#171717] hover:bg-[#1E1E1E] border border-[#262626] hover:border-[#C5A34A]/50 transition-colors group cursor-pointer"
-                >
-                  <div className="p-2 rounded bg-[#090909] text-[#C5A34A] shrink-0 group-hover:scale-110 transition-transform">
-                    <Instagram className="w-4 h-4" />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-[10px] font-mono uppercase text-[#737373] block">
-                      Official Instagram
-                    </span>
-                    <span className="text-sm font-bold text-white group-hover:text-[#C5A34A] transition-colors">
-                      @tradingpathsala
-                    </span>
-                  </div>
-                </a>
-
-                {/* Official Business Address */}
-                <div className="p-3.5 rounded bg-[#171717] border border-[#262626] space-y-2">
-                  <div className="flex items-start gap-3.5">
-                    <div className="p-2 rounded bg-[#090909] text-[#C5A34A] shrink-0 mt-0.5">
-                      <MapPin className="w-4 h-4" />
-                    </div>
-                    <div className="flex-1 space-y-0.5">
-                      <span className="text-[10px] font-mono uppercase text-[#737373] block">
-                        Official Business Address
-                      </span>
-                      <p className="text-sm font-bold text-white">Trading Pathshala</p>
-                      <p className="text-xs text-[#D4D4D4]">3rd Floor, Mahadev Inn,</p>
-                      <p className="text-xs text-[#D4D4D4]">Jalsar Road, Shivganga Muhalla,</p>
-                      <p className="text-xs font-mono text-[#C5A34A]">Deoghar, Jharkhand – 814112, India.</p>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#222222] flex items-center justify-between">
-                    <a
-                      href="https://www.google.com/maps/dir/?api=1&destination=Trading+Pathshala,+3rd+Floor,+Mahadev+Inn,+Jalsar+Road,+Shivganga+Muhalla,+Deoghar,+Jharkhand+814112,+India"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-[#C5A34A] hover:text-[#E2C878] transition-colors"
-                    >
-                      <Navigation className="w-3.5 h-3.5 fill-current" />
-                      <span>Get Directions on Google Maps</span>
-                      <ExternalLink className="w-3 h-3 ml-0.5" />
-                    </a>
+              {/* Address */}
+              <div className="flex items-start gap-3.5 pt-2 border-t border-gray-100">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 text-[#174D32] border border-gray-200 flex items-center justify-center shrink-0">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase">Institute Address</div>
+                  <div className="text-gray-800 leading-relaxed font-medium">
+                    Trading Pathshala, 3rd Floor, Mahadev Inn,
+                    <br />
+                    Jalsar Road, Shivganga Muhalla,
+                    <br />
+                    Deoghar, Jharkhand – 814112, India.
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Transparency Note */}
-            <div className="bg-[#121212] border border-[#222222] rounded p-4 text-[11px] text-[#A0A0A0] space-y-1">
-              <div className="flex items-center gap-1.5 text-white font-semibold">
-                <ShieldCheck className="w-4 h-4 text-[#C5A34A]" />
-                <span>Verified Direct Channels</span>
-              </div>
-              <p className="leading-relaxed">
-                We strictly communicate through official mobile and WhatsApp numbers verified above. No unverified email addresses or third-party telemarketers.
-              </p>
             </div>
           </div>
 
-          {/* Form Column */}
-          <div className="lg:col-span-7 w-full min-w-0">
-            <div className="bg-[#121212] border border-[#222222] rounded-lg p-5 sm:p-8 lg:p-10 shadow-xl w-full">
-              {submittedSuccess ? (
-                <div className="text-center py-12 space-y-4">
-                  <div className="w-14 h-14 bg-[#C5A34A]/20 border border-[#C5A34A]/30 rounded-full flex items-center justify-center text-[#C5A34A] mx-auto">
-                    <CheckCircle2 className="w-8 h-8" />
+          {/* Right: Simple Clean Enquiry Form */}
+          <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-xs">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Admission Enquiry</h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Send us your course enquiry and we will get back to you promptly.
+            </p>
+
+            {submitted ? (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-12 h-12 rounded-full bg-[#EBF3ED] text-[#174D32] flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-900">Enquiry Submitted!</h4>
+                <p className="text-sm text-gray-600">
+                  Thank you, {formData.name}. We have recorded your interest in{' '}
+                  <strong>{formData.courseName}</strong>.
+                </p>
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto bg-[#25D366] hover:bg-[#20ba5a] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-current" />
+                    <span>Chat on WhatsApp</span>
+                  </a>
+                  <button
+                    onClick={() => {
+                      setSubmitted(false);
+                      setFormData({
+                        name: '',
+                        phone: '',
+                        email: '',
+                        courseName: availableCourses[0] || 'Index Option Buying',
+                        message: '',
+                      });
+                    }}
+                    className="text-xs text-gray-500 hover:text-gray-900 underline cursor-pointer"
+                  >
+                    Submit Another Query
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {errorMsg && (
+                  <div className="p-3 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200">
+                    {errorMsg}
                   </div>
-                  <h3 className="text-xl font-bold text-white uppercase tracking-tight">
-                    Enquiry Logged Successfully
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#A0A0A0] max-w-md mx-auto leading-relaxed">
-                    Thank you for reaching out. Prashant Kumar Sinha or our academic desk will contact you via phone or WhatsApp shortly.
-                  </p>
-                  <div className="pt-2 flex justify-center gap-3">
-                    <a
-                      href="https://wa.me/918987599799"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#090909] bg-[#C5A34A] rounded"
-                    >
-                      Connect on WhatsApp Now
-                    </a>
-                    <button
-                      onClick={() => setSubmittedSuccess(false)}
-                      className="px-4 py-2.5 text-xs font-medium text-white bg-[#1A1A1A] border border-[#333333] rounded"
-                    >
-                      Submit Another Query
-                    </button>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g. Rahul Sharma"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm text-gray-900 focus:outline-hidden focus:border-[#174D32] focus:ring-1 focus:ring-[#174D32]"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      placeholder="+91 98765 43210"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm text-gray-900 focus:outline-hidden focus:border-[#174D32] focus:ring-1 focus:ring-[#174D32]"
+                    />
                   </div>
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div>
-                    <h3 className="text-lg font-bold text-white uppercase tracking-wider">
-                      Send an Admission Enquiry
-                    </h3>
-                    <p className="text-xs text-[#737373] mt-1 font-mono">
-                      Directly reviewed by Prashant Kumar Sinha
-                    </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="name@email.com"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm text-gray-900 focus:outline-hidden focus:border-[#174D32] focus:ring-1 focus:ring-[#174D32]"
+                    />
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-mono uppercase text-[#A0A0A0] mb-1.5">
-                        Your Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g. Ramesh Kumar"
-                        className={`w-full bg-[#090909] border rounded px-4 py-3 text-xs sm:text-sm text-white placeholder-[#555555] focus:outline-none transition-colors ${
-                          errors.name ? 'border-rose-500' : 'border-[#262626] focus:border-[#C5A34A]'
-                        }`}
-                      />
-                      {errors.name && (
-                        <span className="text-[11px] text-rose-400 mt-1 block font-mono">{errors.name}</span>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono uppercase text-[#A0A0A0] mb-1.5">
-                        Mobile / WhatsApp Number *
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        placeholder="+91 98765 43210"
-                        className={`w-full bg-[#090909] border rounded px-4 py-3 text-xs sm:text-sm text-white placeholder-[#555555] focus:outline-none transition-colors ${
-                          errors.phone ? 'border-rose-500' : 'border-[#262626] focus:border-[#C5A34A]'
-                        }`}
-                      />
-                      {errors.phone && (
-                        <span className="text-[11px] text-rose-400 mt-1 block font-mono">{errors.phone}</span>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono uppercase text-[#A0A0A0] mb-1.5">
-                        Program of Interest
-                      </label>
-                      <select
-                        value={formData.courseName}
-                        onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
-                        className="w-full bg-[#090909] border border-[#262626] focus:border-[#C5A34A] rounded px-4 py-3 text-xs sm:text-sm text-white focus:outline-none"
-                      >
-                        {availableCourses.map((c) => (
-                          <option key={c} value={c}>
-                            {c}
-                          </option>
-                        ))}
-                        <option value="General Consultation">General Consultation / Unsure</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono uppercase text-[#A0A0A0] mb-1.5">
-                        Your Query / Learning Goals *
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder="Tell us about your current trading experience or questions regarding cohort schedules..."
-                        className={`w-full bg-[#090909] border rounded px-4 py-3 text-xs sm:text-sm text-white placeholder-[#555555] focus:outline-none transition-colors ${
-                          errors.message ? 'border-rose-500' : 'border-[#262626] focus:border-[#C5A34A]'
-                        }`}
-                      />
-                      {errors.message && (
-                        <span className="text-[11px] text-rose-400 mt-1 block font-mono">{errors.message}</span>
-                      )}
-                    </div>
+                  <div className="space-y-1">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                      Course Interested In *
+                    </label>
+                    <select
+                      value={formData.courseName}
+                      onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 text-sm text-gray-900 focus:outline-hidden focus:border-[#174D32] focus:ring-1 focus:ring-[#174D32] bg-white"
+                    >
+                      {availableCourses.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
                   </div>
+                </div>
 
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                    Message (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    placeholder="Enter your message or questions here..."
+                    className="w-full px-3.5 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 focus:outline-hidden focus:border-[#174D32] focus:ring-1 focus:ring-[#174D32]"
+                  />
+                </div>
+
+                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3.5 px-6 text-xs font-bold uppercase tracking-wider text-[#090909] bg-gradient-to-r from-[#C5A34A] to-[#E2C878] hover:brightness-110 disabled:opacity-50 rounded transition-all shadow-md shadow-[#C5A34A]/20 flex items-center justify-center gap-2 cursor-pointer"
+                    className="bg-[#174D32] hover:bg-[#113A26] text-white font-bold text-sm px-6 py-3 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-xs"
                   >
-                    {isSubmitting ? (
-                      <span>Sending Enquiry...</span>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        <span>Submit Admission Enquiry</span>
-                      </>
-                    )}
+                    <Send className="w-4 h-4 text-[#75D68A]" />
+                    <span>Submit Enquiry</span>
                   </button>
-                </form>
-              )}
-            </div>
+
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-sm px-5 py-3 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-current" />
+                    <span>WhatsApp Enquiry</span>
+                  </a>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>

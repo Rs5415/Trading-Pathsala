@@ -2,18 +2,21 @@
 
 @layer base {
   :root {
-    --brand-primary: #090909;
-    --brand-secondary: #171717;
-    --brand-gold: #C5A34A;
-    --brand-light-gold: #E2C878;
-    --brand-grey: #A0A0A0;
+    --bg-main: #F4F7F4;
+    --bg-card: #FFFFFF;
+    --color-primary: #174D32;
+    --color-accent: #75D68A;
+    --color-text-main: #202923;
+    --color-text-secondary: #68736B;
+    --color-gold: #B99B52;
+    --color-gold-hover: #A3843F;
   }
 
   html {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     scroll-behavior: smooth;
-    background-color: #090909;
-    color: #FFFFFF;
+    background-color: #F4F7F4;
+    color: #202923;
     overflow-x: hidden;
     max-width: 100%;
     width: 100%;
@@ -24,6 +27,8 @@
     max-width: 100%;
     width: 100%;
     position: relative;
+    background-color: #F4F7F4;
+    color: #202923;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -32,49 +37,35 @@
     max-width: 100%;
     width: 100%;
     min-height: 100vh;
-  }
-  
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    word-break: break-word;
-  }
-
-  .font-brand-display {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: -0.02em;
+    display: flex;
+    flex-direction: column;
   }
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.scrollbar-none::-webkit-scrollbar,
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.scrollbar-none,
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-/* Custom luxury scrollbar */
+/* Custom scrollbar for light financial theme */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090909;
+  background: #EAEFEA;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #262626;
-  border-radius: 3px;
+  background: #BAC8BC;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C5A34A;
+  background: #174D32;
+}
+
+/* Utility to ensure text wrap and prevent flex break */
+.break-words-safe {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 /* Mobile responsive overflow fix */
 html,
