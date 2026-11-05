@@ -2,21 +2,23 @@
 
 @layer base {
   :root {
-    --bg-main: #F4F7F4;
+    --bg-main: #FCFBF7;
+    --bg-cream: #F8F5EE;
     --bg-card: #FFFFFF;
-    --color-primary: #174D32;
-    --color-accent: #75D68A;
-    --color-text-main: #202923;
-    --color-text-secondary: #68736B;
-    --color-gold: #B99B52;
-    --color-gold-hover: #A3843F;
+    --color-primary-dark: #0D0D0D;
+    --color-gold: #C59B27;
+    --color-gold-hover: #AF851A;
+    --color-gold-light: #FBF4DE;
+    --color-text-main: #18181B;
+    --color-text-muted: #52525B;
+    --color-border: #E8E5DD;
   }
 
   html {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     scroll-behavior: smooth;
-    background-color: #F4F7F4;
-    color: #202923;
+    background-color: #FCFBF7;
+    color: #18181B;
     overflow-x: hidden;
     max-width: 100%;
     width: 100%;
@@ -27,8 +29,8 @@
     max-width: 100%;
     width: 100%;
     position: relative;
-    background-color: #F4F7F4;
-    color: #202923;
+    background-color: #FCFBF7;
+    color: #18181B;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -42,32 +44,33 @@
   }
 }
 
-/* Custom scrollbar for light financial theme */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #EAEFEA;
+  background: #F4F1E8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #BAC8BC;
+  background: #D5CEBE;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #174D32;
+  background: #C59B27;
 }
 
-/* Utility to ensure text wrap and prevent flex break */
+/* Utility to ensure text wrap and prevent overflow */
 .break-words-safe {
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
 }
-/* Mobile responsive overflow fix */
+
+/* Mobile responsive overflow protection */
 html,
 body,
 #root {

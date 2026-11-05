@@ -66,11 +66,11 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#E3EBE4] overflow-hidden">
+      <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#E8E2D5] overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-[#68736B] hover:text-[#202923] hover:bg-[#F4F7F4] transition-colors cursor-pointer"
+          className="absolute top-5 right-5 p-2 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer"
           aria-label="Close Modal"
         >
           <X className="w-5 h-5" />
@@ -78,11 +78,11 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
         {submitted ? (
           <div className="text-center py-6 space-y-4">
-            <div className="w-14 h-14 rounded-full bg-[#EAF3EC] text-[#174D32] flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 rounded-full bg-[#FAF2DE] text-[#916E16] flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="text-2xl font-bold text-[#202923]">Enquiry Received</h3>
-            <p className="text-sm text-[#68736B]">
+            <h3 className="text-2xl font-bold text-[#18181B]">Enquiry Received</h3>
+            <p className="text-sm text-[#52525B]">
               Thank you, {formData.name}. We have logged your request for{' '}
               <strong>{formData.courseName}</strong>.
             </p>
@@ -103,7 +103,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                   setSubmitted(false);
                   onClose();
                 }}
-                className="w-full bg-[#F4F7F4] text-[#202923] hover:bg-[#EAEFEA] font-bold py-2.5 rounded-xl transition-colors cursor-pointer text-xs"
+                className="w-full bg-[#FAF7F0] text-[#18181B] hover:bg-[#F3EFE4] font-bold py-2.5 rounded-xl transition-colors cursor-pointer text-xs"
               >
                 Done / Close
               </button>
@@ -112,11 +112,11 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
         ) : (
           <div className="space-y-5">
             <div className="space-y-1">
-              <div className="text-xs font-bold uppercase tracking-wider text-[#174D32]">
+              <div className="text-xs font-bold uppercase tracking-wider text-[#916E16]">
                 Course Admission
               </div>
-              <h3 className="text-2xl font-bold text-[#202923]">Course Enquiry</h3>
-              <p className="text-xs text-[#68736B]">
+              <h3 className="text-2xl font-bold text-[#18181B]">Course Enquiry</h3>
+              <p className="text-xs text-[#71717A]">
                 Submit your details below to receive batch timing, syllabus prospectus, and fee details.
               </p>
             </div>
@@ -130,7 +130,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
             <form onSubmit={handleSubmit} className="space-y-3.5">
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#202923]">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
                   Your Full Name *
                 </label>
                 <input
@@ -139,13 +139,13 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="e.g. Rahul Verma"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3EBE4] bg-[#F4F7F4] text-sm text-[#202923] focus:outline-hidden focus:border-[#174D32] focus:bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CEBE] bg-[#FCFBF7] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27] focus:bg-white"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#202923]">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
                     Phone / WhatsApp *
                   </label>
                   <input
@@ -154,12 +154,12 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3EBE4] bg-[#F4F7F4] text-sm text-[#202923] focus:outline-hidden focus:border-[#174D32] focus:bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CEBE] bg-[#FCFBF7] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27] focus:bg-white"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#202923]">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
                     Email Address *
                   </label>
                   <input
@@ -168,19 +168,19 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="name@email.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3EBE4] bg-[#F4F7F4] text-sm text-[#202923] focus:outline-hidden focus:border-[#174D32] focus:bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CEBE] bg-[#FCFBF7] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27] focus:bg-white"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#202923]">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
                   Course Selected *
                 </label>
                 <select
                   value={formData.courseName}
                   onChange={(e) => setFormData({ ...formData, courseName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#E3EBE4] bg-[#F4F7F4] text-sm text-[#202923] focus:outline-hidden focus:border-[#174D32] focus:bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CEBE] bg-[#FCFBF7] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27] focus:bg-white"
                 >
                   {availableCourses.map((c) => (
                     <option key={c} value={c}>
@@ -191,7 +191,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#202923]">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
                   Message / Questions (Optional)
                 </label>
                 <textarea
@@ -199,16 +199,16 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   placeholder="Any questions on prerequisites or schedule..."
-                  className="w-full px-3.5 py-2 rounded-xl border border-[#E3EBE4] bg-[#F4F7F4] text-sm text-[#202923] focus:outline-hidden focus:border-[#174D32] focus:bg-white"
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#D5CEBE] bg-[#FCFBF7] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27] focus:bg-white"
                 />
               </div>
 
               <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
                 <button
                   type="submit"
-                  className="w-full bg-[#174D32] hover:bg-[#123E28] text-white font-bold py-3 rounded-xl transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-[#F0C94D] via-[#E5B83A] to-[#D4AF37] hover:brightness-105 text-black font-extrabold py-3 rounded-xl transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <Send className="w-4 h-4 text-[#75D68A]" />
+                  <Send className="w-4 h-4 text-black" />
                   <span>Submit Form</span>
                 </button>
               </div>

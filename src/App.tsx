@@ -3,11 +3,14 @@ import { PageView, Course, WebsiteContent } from './types';
 import { getCourses, getWebsiteContent, getCourseBySlug } from './services/storage';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { FeaturesSection } from './components/FeaturesSection';
 import { CourseSection } from './components/CourseSection';
 import { CourseDetailPage } from './components/CourseDetailPage';
 import { AboutSection } from './components/AboutSection';
+import { ResourcesSection } from './components/ResourcesSection';
 import { ContactSection } from './components/ContactSection';
 import { StudentLogin } from './components/StudentLogin';
+import { CtaBanner } from './components/CtaBanner';
 import { Footer } from './components/Footer';
 import { EnquiryModal } from './components/EnquiryModal';
 import { MessageCircle } from 'lucide-react';
@@ -49,7 +52,7 @@ export default function App() {
         }
       } else if (hash === 'student-login') {
         setCurrentView('student-login');
-      } else if (['home', 'about', 'courses', 'contact'].includes(hash)) {
+      } else if (['home', 'courses', 'about', 'resources', 'contact'].includes(hash)) {
         setCurrentView(hash as PageView);
       }
     };
@@ -78,7 +81,6 @@ export default function App() {
       return;
     }
 
-    // Default multi-section view
     setCurrentView(view);
     window.location.hash = `#/${view}`;
 
@@ -112,14 +114,13 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-[#EBF3ED] selection:text-[#174D32] w-full max-w-full overflow-x-hidden">
-      {/* 1. HEADER */}
+      {/* Navigation Bar */}
       <Navbar
         currentView={currentView}
         onNavigate={handleNavigate}
-        onOpenEnquiry={() => handleOpenEnquiry('Course Admission Enquiry')}
       />
 
-      {/* Main Content Router */}
+      {/* Main View Router */}
       <main className="flex-1 w-full max-w-full">
         {currentView === 'course-detail' && selectedCourse ? (
           <CourseDetailPage
@@ -136,40 +137,46 @@ export default function App() {
           />
         ) : (
           <>
-            {/* 2. HERO */}
+            {/* Hero Section */}
             <Hero
               onNavigate={handleNavigate}
               onOpenEnquiry={() => handleOpenEnquiry('General Admission Enquiry')}
             />
 
-            {/* 3. OUR COURSES (Exactly 6 courses with prices) */}
+            {/* Features Blocks */}
+            <FeaturesSection />
+
+            {/* Our Six Actual Courses */}
             <CourseSection
               courses={courses}
               onSelectCourse={handleSelectCourse}
               onEnquireCourse={handleOpenEnquiry}
             />
 
-            {/* 4. ABOUT US */}
+            {/* About Us */}
             <AboutSection />
 
-            {/* 5. CONTACT */}
+            {/* Resources Section */}
+            <ResourcesSection />
+
+            {/* Contact Section */}
             <ContactSection
               content={content}
               availableCourses={courses.map((c) => c.name)}
             />
+
+            {/* Bottom CTA Banner */}
+            <CtaBanner onNavigate={handleNavigate} />
           </>
         )}
       </main>
 
-      {/* 6. FOOTER */}
-      <Footer
-        onNavigate={handleNavigate}
-        onOpenEnquiry={handleOpenEnquiry}
-      />
+      {/* Footer */}
+      <Footer onNavigate={handleNavigate} />
 
       {/* Floating WhatsApp Action */}
       <a
-        href="https://wa.me/918987599799?text=Hello%20Prashant%20Sir,%20I%20am%20interested%20in%20learning%20the%20art%20of%20trading%20with%20Trading%20Pathsala."
+        href="https://wa.me/918987599799?text=Hello%20Prashant%20Sir,%20I%20am%20interested%20in%20learning%20the%20art%20of%20trading%20with%20Trading%20Pathshala."
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-40 bg-[#25D366] hover:bg-[#20ba5a] text-white p-3 sm:p-3.5 rounded-full shadow-lg flex items-center gap-2 transition-transform hover:scale-105 cursor-pointer"
@@ -182,7 +189,7 @@ export default function App() {
         </span>
       </a>
 
-      {/* Simple Enquiry Modal */}
+      {/* Enquiry Modal */}
       <EnquiryModal
         isOpen={enquiryModalOpen}
         initialCourseName={enquiryCourseName}

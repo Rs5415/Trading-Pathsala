@@ -20,6 +20,24 @@ export interface Course {
   featured?: boolean;
 }
 
+export interface LearningResourceItem {
+  id: string;
+  title: string;
+  category: 'PDF Guide' | 'Trading Study Note' | 'Video Lesson' | 'Market Update' | 'Course-related resources';
+  fileSize: string;
+  description: string;
+  downloadUrl?: string;
+  dateAdded: string;
+}
+
+export interface AnnouncementItem {
+  id: string;
+  title: string;
+  date: string;
+  content: string;
+  badge: string;
+}
+
 export interface Enquiry {
   id: string;
   name: string;
@@ -43,15 +61,13 @@ export interface WebsiteContent {
   businessCategory: string;
   officeAddress: string;
   googleMapsDirectionsUrl: string;
-  announcementText?: string;
 }
 
 export type PageView =
   | 'home'
-  | 'about'
   | 'courses'
   | 'course-detail'
-  | 'why-us'
-  | 'google-profile'
-  | 'student-login'
-  | 'contact';
+  | 'about'
+  | 'resources'
+  | 'contact'
+  | 'student-login';
