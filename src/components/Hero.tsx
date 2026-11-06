@@ -1,11 +1,11 @@
 import React from 'react';
-import { PageView } from '../types';
+import { Link } from 'react-router-dom';
 import heroTradingImg from '../assets/images/hero_trading_market_1793416378138.jpg';
 import officialLogo from '../assets/trading_pathshala_official_logo.png';
 import { ArrowRight, Sparkles, TrendingUp, CheckCircle2 } from 'lucide-react';
 
 interface HeroProps {
-  onNavigate: (view: PageView) => void;
+  onNavigate?: (view: any) => void;
   onOpenEnquiry?: () => void;
 }
 
@@ -56,20 +56,20 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
 
             {/* Action Buttons: Start Learning & Explore Courses */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-3">
-              <button
-                onClick={() => onNavigate('courses')}
+              <Link
+                to="/courses"
                 className="bg-gradient-to-r from-[#F0C94D] via-[#E5B83A] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-base px-8 py-3.5 rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 group"
               >
                 <span>Start Learning</span>
                 <ArrowRight className="w-4 h-4 text-black group-hover:translate-x-1 transition-transform" />
-              </button>
+              </Link>
 
-              <button
-                onClick={() => onNavigate('courses')}
+              <Link
+                to="/courses"
                 className="bg-black hover:bg-neutral-900 text-white border border-[#E5B83A]/40 font-bold text-base px-7 py-3.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
               >
                 <span>Explore Courses</span>
-              </button>
+              </Link>
             </div>
 
             <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-[#71717A]">
@@ -103,8 +103,8 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                 <div className="absolute top-3 right-3 bg-black/90 backdrop-blur-md p-1.5 px-3 rounded-xl border border-[#E5B83A]/50 shadow-md flex items-center gap-2">
                   <img
                     src={officialLogo}
-                    alt="Trading Pathshala Logo"
-                    className="h-7 w-auto object-contain"
+                    alt="Trading Pathsala Logo"
+                    className="h-9 w-auto object-contain"
                   />
                 </div>
               </div>

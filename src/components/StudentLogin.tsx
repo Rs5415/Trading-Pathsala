@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import officialLogo from '../assets/trading_pathshala_official_logo.png';
 import { getStudentSession, setStudentSession, loginStudent, registerStudent, StudentUser } from '../services/storage';
 import { Mail, Lock, Eye, EyeOff, BookOpen, FileText, Bell, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface StudentLoginProps {
-  onBackToHome: () => void;
+  onBackToHome?: () => void;
   onOpenEnquiry?: (courseName?: string) => void;
 }
 
 export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpenEnquiry }) => {
+  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<StudentUser | null>(getStudentSession());
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -58,7 +60,10 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div>
           <button
-            onClick={onBackToHome}
+            onClick={() => {
+              if (onBackToHome) onBackToHome();
+              else navigate('/');
+            }}
             className="inline-flex items-center gap-2 text-sm font-bold text-[#916E16] hover:underline cursor-pointer bg-white px-4 py-2 rounded-xl border border-[#E8E2D5] shadow-2xs"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -70,21 +75,30 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
           /* Student Dashboard */
           <div className="bg-white rounded-2xl border border-[#E8E2D5] p-6 sm:p-10 shadow-xs space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8E2D5]">
-              <div className="space-y-1">
-                <div className="text-xs font-bold uppercase tracking-wider text-[#916E16]">
-                  Student Portal Dashboard
+              <div className="flex items-center gap-4">
+                <div className="bg-[#0B0B0C] p-2.5 rounded-xl border border-[#D4AF37]/50 shrink-0 shadow-xs">
+                  <img
+                    src={officialLogo}
+                    alt="Trading Pathsala"
+                    className="h-11 w-auto object-contain"
+                  />
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18181B]">
-                  Welcome, {currentUser.name}
-                </h1>
-                <p className="text-xs sm:text-sm text-[#71717A]">
-                  Student ID: <span className="font-mono font-bold text-[#916E16]">{currentUser.studentId}</span> • Email: {currentUser.email}
-                </p>
+                <div className="space-y-1">
+                  <div className="text-xs font-bold uppercase tracking-wider text-[#916E16]">
+                    Student Portal Dashboard
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18181B]">
+                    Welcome, {currentUser.name}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-[#71717A]">
+                    Student ID: <span className="font-mono font-bold text-[#916E16]">{currentUser.studentId}</span> • Email: {currentUser.email}
+                  </p>
+                </div>
               </div>
 
               <button
                 onClick={handleLogout}
-                className="bg-[#FAF7F0] hover:bg-[#F3EFE4] text-[#18181B] font-bold text-xs px-4 py-2.5 rounded-xl border border-[#E8E2D5] transition-colors cursor-pointer"
+                className="bg-[#FAF7F0] hover:bg-[#F3EFE4] text-[#18181B] font-bold text-xs px-4 py-2.5 rounded-xl border border-[#E8E2D5] transition-colors cursor-pointer self-start sm:self-center"
               >
                 Sign Out
               </button>
@@ -192,11 +206,11 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
           /* Login / Register Card */
           <div className="max-w-md mx-auto bg-white rounded-2xl border border-[#E8E2D5] p-6 sm:p-8 shadow-xs space-y-6">
             <div className="text-center space-y-3">
-              <div className="bg-[#0B0B0C] px-4 py-2 rounded-xl border border-[#D4AF37]/50 inline-block shadow-sm">
+              <div className="bg-[#0B0B0C] px-5 py-3 rounded-xl border border-[#D4AF37]/50 inline-block shadow-sm">
                 <img
                   src={officialLogo}
-                  alt="Trading Pathshala"
-                  className="h-10 w-auto mx-auto object-contain"
+                  alt="Trading Pathsala - Learn the Art of Trading"
+                  className="h-14 sm:h-16 w-auto mx-auto object-contain"
                 />
               </div>
               <h1 className="text-2xl font-extrabold text-[#18181B]">

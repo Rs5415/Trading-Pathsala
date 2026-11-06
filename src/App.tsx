@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { PageView, Course, WebsiteContent } from './types';
-import { getCourses, getWebsiteContent, getCourseBySlug } from './services/storage';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Course, WebsiteContent } from './types';
+import { getCourses, getWebsiteContent } from './services/storage';
 import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { FeaturesSection } from './components/FeaturesSection';
-import { CourseSection } from './components/CourseSection';
-import { CourseDetailPage } from './components/CourseDetailPage';
-import { AboutSection } from './components/AboutSection';
-import { ResourcesSection } from './components/ResourcesSection';
-import { ContactSection } from './components/ContactSection';
-import { StudentLogin } from './components/StudentLogin';
-import { CtaBanner } from './components/CtaBanner';
 import { Footer } from './components/Footer';
+import { ScrollToTop } from './components/ScrollToTop';
 import { EnquiryModal } from './components/EnquiryModal';
 import { MessageCircle } from 'lucide-react';
+
+// 6 Main Pages
+import { HomePage } from './pages/HomePage';
+import { AboutPage } from './pages/AboutPage';
+import { CoursesPage } from './pages/CoursesPage';
+import { ServicesPage } from './pages/ServicesPage';
+import { OffersPage } from './pages/OffersPage';
+import { ContactPage } from './pages/ContactPage';
+
+// Course Detail Page & Separate Portals
+import { CourseDetailPage } from './components/CourseDetailPage';
+import { StudentLogin } from './components/StudentLogin';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 export default function App() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [content, setContent] = useState<WebsiteContent | null>(null);
-
-  // Navigation & View States
-  const [currentView, setCurrentView] = useState<PageView>('home');
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
   // Enquiry Modal States
   const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
@@ -31,150 +33,105 @@ export default function App() {
     const loadedCourses = getCourses();
     setCourses(loadedCourses);
     setContent(getWebsiteContent());
-
-    if (selectedCourse) {
-      const updated = loadedCourses.find((c) => c.id === selectedCourse.id);
-      if (updated) setSelectedCourse(updated);
-    }
   };
 
   useEffect(() => {
     loadData();
-
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#/', '').replace('#', '');
-      if (hash.startsWith('course/')) {
-        const slug = hash.replace('course/', '');
-        const found = getCourseBySlug(slug);
-        if (found) {
-          setSelectedCourse(found);
-          setCurrentView('course-detail');
-        }
-      } else if (hash === 'student-login') {
-        setCurrentView('student-login');
-      } else if (['home', 'courses', 'about', 'resources', 'contact'].includes(hash)) {
-        setCurrentView(hash as PageView);
-      }
-    };
-
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const handleNavigate = (view: PageView, courseSlug?: string) => {
-    if (view === 'course-detail' && courseSlug) {
-      const found = getCourseBySlug(courseSlug);
-      if (found) {
-        setSelectedCourse(found);
-        setCurrentView('course-detail');
-        window.location.hash = `#/course/${found.slug}`;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-    }
-
-    if (view === 'student-login') {
-      setCurrentView('student-login');
-      window.location.hash = '#/student-login';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    setCurrentView(view);
-    window.location.hash = `#/${view}`;
-
-    if (view === 'home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      setTimeout(() => {
-        const el = document.getElementById(view);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 50);
-    }
-  };
-
-  const handleSelectCourse = (course: Course) => {
-    setSelectedCourse(course);
-    setCurrentView('course-detail');
-    window.location.hash = `#/course/${course.slug}`;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleOpenEnquiry = (courseName?: string) => {
-    setEnquiryCourseName(courseName || (courses[0]?.name ?? 'Index Option Buying'));
+  const handleOpenEnquiry = (courseOrServiceName?: string) => {
+    setEnquiryCourseName(courseOrServiceName || (courses[0]?.name ?? 'Index Option Buying'));
     setEnquiryModalOpen(true);
   };
 
   if (!content) return null;
 
+  const availableCourseNames = courses.map((c) => c.name);
+
   return (
-    <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-[#EBF3ED] selection:text-[#174D32] w-full max-w-full overflow-x-hidden">
-      {/* Navigation Bar */}
-      <Navbar
-        currentView={currentView}
-        onNavigate={handleNavigate}
-      />
+    <div className="min-h-screen bg-white text-gray-900 flex flex-col font-sans selection:bg-[#FAF2DE] selection:text-[#916E16] w-full max-w-full overflow-x-hidden">
+      {/* Automatically Scroll to Top on every route transition */}
+      <ScrollToTop />
 
-      {/* Main View Router */}
+      {/* Consistent Header & Brand Logo */}
+      <Navbar />
+
+      {/* 6-Page Multi-Page Route Outlet */}
       <main className="flex-1 w-full max-w-full">
-        {currentView === 'course-detail' && selectedCourse ? (
-          <CourseDetailPage
-            course={selectedCourse}
-            allCourses={courses}
-            onBack={() => handleNavigate('courses')}
-            onSelectCourse={handleSelectCourse}
-            onEnquireCourse={handleOpenEnquiry}
+        <Routes>
+          {/* 1. Home Page */}
+          <Route
+            path="/"
+            element={<HomePage courses={courses} onOpenEnquiry={handleOpenEnquiry} />}
           />
-        ) : currentView === 'student-login' ? (
-          <StudentLogin
-            onBackToHome={() => handleNavigate('home')}
-            onOpenEnquiry={handleOpenEnquiry}
+
+          {/* 2. About Us Page */}
+          <Route
+            path="/about"
+            element={<AboutPage onOpenEnquiry={handleOpenEnquiry} />}
           />
-        ) : (
-          <>
-            {/* Hero Section */}
-            <Hero
-              onNavigate={handleNavigate}
-              onOpenEnquiry={() => handleOpenEnquiry('General Admission Enquiry')}
-            />
 
-            {/* Features Blocks */}
-            <FeaturesSection />
+          {/* 3. Courses Page & Course Detail */}
+          <Route
+            path="/courses"
+            element={<CoursesPage courses={courses} onOpenEnquiry={handleOpenEnquiry} />}
+          />
+          <Route
+            path="/courses/:slug"
+            element={
+              <CourseDetailPage
+                allCourses={courses}
+                onEnquireCourse={handleOpenEnquiry}
+              />
+            }
+          />
 
-            {/* Our Six Actual Courses */}
-            <CourseSection
-              courses={courses}
-              onSelectCourse={handleSelectCourse}
-              onEnquireCourse={handleOpenEnquiry}
-            />
+          {/* 4. Services Page */}
+          <Route
+            path="/services"
+            element={<ServicesPage onOpenEnquiry={handleOpenEnquiry} />}
+          />
 
-            {/* About Us */}
-            <AboutSection />
+          {/* 5. Offers Page */}
+          <Route
+            path="/offers"
+            element={<OffersPage onOpenEnquiry={handleOpenEnquiry} />}
+          />
 
-            {/* Resources Section */}
-            <ResourcesSection />
+          {/* 6. Contact Us Page */}
+          <Route
+            path="/contact"
+            element={
+              <ContactPage
+                content={content}
+                availableCourses={availableCourseNames}
+              />
+            }
+          />
 
-            {/* Contact Section */}
-            <ContactSection
-              content={content}
-              availableCourses={courses.map((c) => c.name)}
-            />
+          {/* Separate Functional Portals (Not part of 6 main nav pages) */}
+          <Route
+            path="/student-login"
+            element={<StudentLogin onOpenEnquiry={handleOpenEnquiry} />}
+          />
+          <Route
+            path="/login"
+            element={<StudentLogin onOpenEnquiry={handleOpenEnquiry} />}
+          />
+          <Route
+            path="/admin"
+            element={<AdminDashboard />}
+          />
 
-            {/* Bottom CTA Banner */}
-            <CtaBanner onNavigate={handleNavigate} />
-          </>
-        )}
+          {/* Catch-all fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
-      {/* Footer */}
-      <Footer onNavigate={handleNavigate} />
+      {/* Consistent Footer & Brand Logo */}
+      <Footer />
 
-      {/* Floating WhatsApp Action */}
+      {/* Floating WhatsApp Action Button */}
       <a
         href="https://wa.me/918987599799?text=Hello%20Prashant%20Sir,%20I%20am%20interested%20in%20learning%20the%20art%20of%20trading%20with%20Trading%20Pathshala."
         target="_blank"
@@ -189,11 +146,11 @@ export default function App() {
         </span>
       </a>
 
-      {/* Enquiry Modal */}
+      {/* Global Admission & Consultation Enquiry Modal */}
       <EnquiryModal
         isOpen={enquiryModalOpen}
         initialCourseName={enquiryCourseName}
-        availableCourses={courses.map((c) => c.name)}
+        availableCourses={availableCourseNames}
         onClose={() => setEnquiryModalOpen(false)}
         onSuccess={() => {
           loadData();

@@ -1,12 +1,12 @@
 import React from 'react';
-import { PageView } from '../types';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 interface CtaBannerProps {
-  onNavigate: (view: PageView) => void;
+  onNavigate?: (view: any) => void;
 }
 
-export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigate }) => {
+export const CtaBanner: React.FC<CtaBannerProps> = () => {
   return (
     <section className="bg-black text-white py-14 sm:py-16 border-t border-[#B99B52]/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
@@ -20,13 +20,13 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onNavigate }) => {
         </h2>
 
         <div className="pt-2">
-          <button
-            onClick={() => onNavigate('courses')}
+          <Link
+            to="/courses"
             className="bg-[#B99B52] hover:bg-[#A3843F] text-black font-extrabold text-base px-8 py-3.5 rounded-xl shadow-lg transition-all cursor-pointer inline-flex items-center gap-2 hover:scale-105"
           >
             <span>Join Now</span>
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>

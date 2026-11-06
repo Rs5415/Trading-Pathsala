@@ -54,8 +54,8 @@ export const AboutSection: React.FC = () => {
               <div className="bg-[#0B0B0C] p-4 sm:p-5 rounded-xl border border-[#D4AF37]/50 inline-block shadow-md">
                 <img
                   src={officialLogo}
-                  alt="Trading Pathshala"
-                  className="h-16 mx-auto object-contain"
+                  alt="Trading Pathsala"
+                  className="h-20 sm:h-24 mx-auto object-contain"
                 />
               </div>
 

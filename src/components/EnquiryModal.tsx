@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { submitEnquiry } from '../services/storage';
+import officialLogo from '../assets/trading_pathshala_official_logo.png';
 import { X, Send, MessageCircle, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface EnquiryModalProps {
@@ -67,14 +68,23 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#E8E2D5] overflow-hidden">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer"
-          aria-label="Close Modal"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Header with Logo and Close Button */}
+        <div className="flex items-center justify-between pb-4 border-b border-[#E8E2D5] mb-5">
+          <div className="bg-[#0B0B0C] px-3.5 py-1.5 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-xs">
+            <img
+              src={officialLogo}
+              alt="Trading Pathsala"
+              className="h-8 w-auto object-contain"
+            />
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer"
+            aria-label="Close Modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {submitted ? (
           <div className="text-center py-6 space-y-4">

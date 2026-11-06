@@ -68,6 +68,5 @@ export type PageView =
   | 'courses'
   | 'course-detail'
   | 'about'
-  | 'resources'
   | 'contact'
   | 'student-login';

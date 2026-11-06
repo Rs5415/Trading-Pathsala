@@ -109,6 +109,13 @@ export function submitEnquiry(enquiry: Omit<Enquiry, 'id' | 'status' | 'submitte
   return newEnq;
 }
 
+export function updateEnquiryStatus(id: string, status: 'New' | 'Contacted' | 'Closed'): Enquiry[] {
+  const enquiries = getEnquiries();
+  const updated = enquiries.map((e) => (e.id === id ? { ...e, status } : e));
+  localStorage.setItem(STORAGE_KEYS.ENQUIRIES, JSON.stringify(updated));
+  return updated;
+}
+
 // Website Content
 export function getWebsiteContent(): WebsiteContent {
   try {
