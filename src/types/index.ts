@@ -18,6 +18,89 @@ export interface Course {
   curriculum: CurriculumModule[];
   prerequisites?: string;
   featured?: boolean;
+  published?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UserProfile {
+  uid: string;
+  name: string;
+  email: string;
+  role: 'student' | 'admin';
+  studentId: string;
+  phone?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export type OrderStatus = 'pending' | 'approved' | 'rejected';
+
+export interface Order {
+  id: string;
+  studentUid: string;
+  studentName: string;
+  studentEmail: string;
+  studentPhone?: string;
+  courseId: string;
+  courseName: string;
+  courseSlug: string;
+  amount: number;
+  utr: string;
+  paymentMethod: 'UPI';
+  status: OrderStatus;
+  rejectionReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+  reviewedBy?: string;
+}
+
+export interface Enrollment {
+  id: string;
+  studentUid: string;
+  studentEmail: string;
+  studentName: string;
+  courseId: string;
+  courseName: string;
+  courseSlug: string;
+  orderId?: string;
+  enrolledAt: string;
+  active: boolean;
+  batchName?: string;
+}
+
+export interface OfferItem {
+  id: string;
+  title: string;
+  discountPercent?: number;
+  code?: string;
+  validTill: string;
+  description: string;
+  active: boolean;
+  createdAt?: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  date: string;
+  type: 'info' | 'alert' | 'update';
+  targetRole?: 'all' | 'students' | 'admins';
+  createdAt?: string;
+}
+
+export interface InstituteSettings {
+  upiId: string;
+  upiPayeeName: string;
+  qrImageUrl?: string;
+  paymentInstructions: string;
+  supportPhone: string;
+  whatsappNumber: string;
+  supportEmail: string;
+  officeAddress: string;
+  noticeBanner?: string;
+  updatedAt?: string;
 }
 
 export interface LearningResourceItem {

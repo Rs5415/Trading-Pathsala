@@ -1,0 +1,118 @@
+{
+  "$schema": "https://firebase.google.com/docs/firestore/blueprint-schema-v1.json",
+  "entities": {
+    "users": {
+      "description": "User profiles for enrolled students and administrators",
+      "fields": {
+        "uid": { "type": "string", "description": "Authenticated user UID" },
+        "name": { "type": "string", "description": "Student full name" },
+        "email": { "type": "string", "description": "Registered email address" },
+        "role": { "type": "string", "description": "Role: student or admin" },
+        "studentId": { "type": "string", "description": "Unique institutional Student ID" },
+        "phone": { "type": "string", "description": "Optional WhatsApp phone number" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      }
+    },
+    "admins": {
+      "description": "Authorized administrator UIDs for secure role-based access control",
+      "fields": {
+        "uid": { "type": "string", "description": "Administrator UID" },
+        "email": { "type": "string", "description": "Administrator email address" },
+        "role": { "type": "string", "description": "Must be admin" },
+        "createdAt": { "type": "string", "description": "Timestamp when admin role was granted" }
+      }
+    },
+    "courses": {
+      "description": "Curriculum programs and pricing for Trading Pathshala",
+      "fields": {
+        "id": { "type": "string", "description": "Course unique ID" },
+        "slug": { "type": "string", "description": "URL slug" },
+        "name": { "type": "string", "description": "Course title" },
+        "category": { "type": "string", "description": "Trading category" },
+        "shortDescription": { "type": "string", "description": "Brief summary" },
+        "fullDescription": { "type": "string", "description": "Detailed curriculum overview" },
+        "price": { "type": "number", "description": "Course tuition fee in INR" },
+        "image": { "type": "string", "description": "Banner image path or URL" },
+        "tags": { "type": "array", "description": "Search and topic tags" },
+        "coverageTopics": { "type": "array", "description": "Core syllabus points" },
+        "curriculum": { "type": "array", "description": "Module lesson structures" },
+        "published": { "type": "boolean", "description": "Visibility toggle" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      }
+    },
+    "orders": {
+      "description": "UPI Course purchase orders with UTR transaction references",
+      "fields": {
+        "id": { "type": "string", "description": "Unique Order ID" },
+        "studentUid": { "type": "string", "description": "UID of purchasing student" },
+        "studentName": { "type": "string", "description": "Purchasing student name" },
+        "studentEmail": { "type": "string", "description": "Purchasing student email" },
+        "studentPhone": { "type": "string", "description": "WhatsApp contact number" },
+        "courseId": { "type": "string", "description": "Selected course ID" },
+        "courseName": { "type": "string", "description": "Selected course name" },
+        "courseSlug": { "type": "string", "description": "Selected course slug" },
+        "amount": { "type": "number", "description": "Payment amount in INR" },
+        "utr": { "type": "string", "description": "12-digit UPI Transaction Reference Number" },
+        "paymentMethod": { "type": "string", "description": "Payment gateway/method (UPI)" },
+        "status": { "type": "string", "description": "pending, approved, or rejected" },
+        "rejectionReason": { "type": "string", "description": "Optional reason if rejected" },
+        "createdAt": { "type": "string", "description": "Order creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Order update timestamp" },
+        "reviewedBy": { "type": "string", "description": "UID of reviewing admin" }
+      }
+    },
+    "enrollments": {
+      "description": "Approved student enrollments granting active access to course resources",
+      "fields": {
+        "id": { "type": "string", "description": "studentUid_courseId" },
+        "studentUid": { "type": "string", "description": "Student UID" },
+        "studentEmail": { "type": "string", "description": "Student email" },
+        "studentName": { "type": "string", "description": "Student name" },
+        "courseId": { "type": "string", "description": "Enrolled course ID" },
+        "courseName": { "type": "string", "description": "Enrolled course title" },
+        "courseSlug": { "type": "string", "description": "Enrolled course slug" },
+        "orderId": { "type": "string", "description": "Associated approved order ID" },
+        "enrolledAt": { "type": "string", "description": "Enrollment timestamp" },
+        "active": { "type": "boolean", "description": "Access active flag" },
+        "batchName": { "type": "string", "description": "Assigned mentorship batch" }
+      }
+    },
+    "settings": {
+      "description": "System-wide institute configuration including UPI payment parameters",
+      "fields": {
+        "upiId": { "type": "string", "description": "Official UPI ID" },
+        "upiPayeeName": { "type": "string", "description": "Institute payee name" },
+        "qrImageUrl": { "type": "string", "description": "Custom QR image URL" },
+        "paymentInstructions": { "type": "string", "description": "Step-by-step instructions" },
+        "supportPhone": { "type": "string", "description": "Official support phone" },
+        "whatsappNumber": { "type": "string", "description": "WhatsApp helpline" },
+        "supportEmail": { "type": "string", "description": "Support email address" },
+        "officeAddress": { "type": "string", "description": "Physical institute address" },
+        "updatedAt": { "type": "string", "description": "Last settings update timestamp" }
+      }
+    },
+    "offers": {
+      "description": "Promotional offers and batch discounts",
+      "fields": {
+        "id": { "type": "string", "description": "Offer ID" },
+        "title": { "type": "string", "description": "Offer title" },
+        "discountPercent": { "type": "number", "description": "Discount percent" },
+        "validTill": { "type": "string", "description": "Validity period" },
+        "description": { "type": "string", "description": "Offer details" },
+        "active": { "type": "boolean", "description": "Active flag" }
+      }
+    },
+    "notifications": {
+      "description": "Institute announcements and batch notices",
+      "fields": {
+        "id": { "type": "string", "description": "Notification ID" },
+        "title": { "type": "string", "description": "Notice title" },
+        "message": { "type": "string", "description": "Notice text" },
+        "date": { "type": "string", "description": "Display date" },
+        "type": { "type": "string", "description": "info, alert, or update" }
+      }
+    }
+  }
+}

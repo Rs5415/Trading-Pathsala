@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Course, WebsiteContent } from './types';
-import { getCourses, getWebsiteContent } from './services/storage';
+import { getWebsiteContent } from './services/storage';
+import { getCoursesList } from './services/firestoreService';
+import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { EnquiryModal } from './components/EnquiryModal';
+import { UpiPaymentModal } from './components/UpiPaymentModal';
 import { MessageCircle } from 'lucide-react';
 
 // 6 Main Pages
@@ -21,7 +24,8 @@ import { CourseDetailPage } from './components/CourseDetailPage';
 import { StudentLogin } from './components/StudentLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
 
-export default function App() {
+function AppContent() {
+  const navigate = useNavigate();
   const [courses, setCourses] = useState<Course[]>([]);
   const [content, setContent] = useState<WebsiteContent | null>(null);
 
@@ -29,8 +33,11 @@ export default function App() {
   const [enquiryModalOpen, setEnquiryModalOpen] = useState(false);
   const [enquiryCourseName, setEnquiryCourseName] = useState<string>('Index Option Buying');
 
-  const loadData = () => {
-    const loadedCourses = getCourses();
+  // UPI Payment Modal State
+  const [upiPaymentCourse, setUpiPaymentCourse] = useState<Course | null>(null);
+
+  const loadData = async () => {
+    const loadedCourses = await getCoursesList();
     setCourses(loadedCourses);
     setContent(getWebsiteContent());
   };
@@ -42,6 +49,10 @@ export default function App() {
   const handleOpenEnquiry = (courseOrServiceName?: string) => {
     setEnquiryCourseName(courseOrServiceName || (courses[0]?.name ?? 'Index Option Buying'));
     setEnquiryModalOpen(true);
+  };
+
+  const handleOpenBuyCourse = (course: Course) => {
+    setUpiPaymentCourse(course);
   };
 
   if (!content) return null;
@@ -74,7 +85,13 @@ export default function App() {
           {/* 3. Courses Page & Course Detail */}
           <Route
             path="/courses"
-            element={<CoursesPage courses={courses} onOpenEnquiry={handleOpenEnquiry} />}
+            element={
+              <CoursesPage
+                courses={courses}
+                onOpenEnquiry={handleOpenEnquiry}
+                onBuyCourse={handleOpenBuyCourse}
+              />
+            }
           />
           <Route
             path="/courses/:slug"
@@ -82,6 +99,7 @@ export default function App() {
               <CourseDetailPage
                 allCourses={courses}
                 onEnquireCourse={handleOpenEnquiry}
+                onBuyCourse={handleOpenBuyCourse}
               />
             }
           />
@@ -156,6 +174,25 @@ export default function App() {
           loadData();
         }}
       />
+
+      {/* Global UPI Payment Modal */}
+      <UpiPaymentModal
+        isOpen={Boolean(upiPaymentCourse)}
+        course={upiPaymentCourse}
+        onClose={() => setUpiPaymentCourse(null)}
+        onNavigateLogin={() => {
+          setUpiPaymentCourse(null);
+          navigate('/student-login');
+        }}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

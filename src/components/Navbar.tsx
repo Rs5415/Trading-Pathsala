@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import officialLogo from '../assets/trading_pathshala_official_logo.png';
-import { Menu, X, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Menu, X, User, Shield, CheckCircle2 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, userProfile, isAdmin } = useAuth();
 
   const navLinks = [
     { label: 'Home', path: '/' },
@@ -24,6 +26,8 @@ export const Navbar: React.FC = () => {
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
   };
+
+  const displayName = userProfile?.name || user?.displayName || (user ? 'Student' : '');
 
   return (
     <header className="sticky top-0 z-50 bg-[#0B0B0C] text-white border-b border-[#D4AF37]/30 shadow-md">
@@ -65,29 +69,40 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* Golden-Yellow Student Login Button on Right */}
-          <div className="hidden md:flex items-center">
+          {/* User Auth Portal Actions on Right */}
+          <div className="hidden md:flex items-center gap-2.5">
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="px-3 py-1.5 text-xs font-bold rounded-lg border border-red-400/40 bg-red-950/40 text-red-300 hover:bg-red-900/50 flex items-center gap-1.5 transition-colors"
+                title="Administrator Management Desk"
+              >
+                <Shield className="w-3.5 h-3.5 text-red-400" />
+                <span>Admin Desk</span>
+              </Link>
+            )}
+
             <Link
-              to="/student-login"
+              to={isAdmin ? '/admin' : '/student-login'}
               className={`px-4 py-2 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center gap-2 shadow-xs ${
-                location.pathname === '/student-login'
+                location.pathname === '/student-login' || location.pathname === '/admin'
                   ? 'bg-gradient-to-r from-[#F5D061] to-[#D4AF37] text-black font-extrabold shadow-md'
                   : 'bg-gradient-to-r from-[#E5B83A] to-[#C59B27] hover:brightness-110 text-black font-extrabold'
               }`}
             >
               <User className="w-4 h-4 text-black" />
-              <span>Student Login</span>
+              <span>{user ? (isAdmin ? 'Admin Desk' : `Portal (${displayName.split(' ')[0]})`) : 'Student Login'}</span>
             </Link>
           </div>
 
           {/* Mobile Menu Toggle */}
           <div className="md:hidden flex items-center gap-2">
             <Link
-              to="/student-login"
+              to={isAdmin ? '/admin' : '/student-login'}
               onClick={closeMobileMenu}
               className="text-xs font-bold text-black bg-[#E5B83A] px-3 py-2 rounded-lg"
             >
-              Login
+              {user ? (isAdmin ? 'Admin' : 'Portal') : 'Login'}
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -120,13 +135,25 @@ export const Navbar: React.FC = () => {
               </Link>
             );
           })}
+
+          {isAdmin && (
+            <Link
+              to="/admin"
+              onClick={closeMobileMenu}
+              className="block w-full text-left px-4 py-2.5 rounded-lg text-sm font-bold text-red-300 bg-red-950/40 border border-red-400/30 flex items-center gap-2 cursor-pointer mt-2"
+            >
+              <Shield className="w-4 h-4 text-red-400" />
+              <span>Admin Desk</span>
+            </Link>
+          )}
+
           <Link
             to="/student-login"
             onClick={closeMobileMenu}
             className="block w-full text-left px-4 py-2.5 rounded-lg text-sm font-bold text-black bg-[#E5B83A] flex items-center gap-2 cursor-pointer mt-2"
           >
             <User className="w-4 h-4" />
-            <span>Student Login</span>
+            <span>{user ? `Student Dashboard (${displayName})` : 'Student Login'}</span>
           </Link>
         </div>
       )}

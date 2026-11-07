@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Course } from '../types';
 import { getCourseBySlug, getCourses } from '../services/storage';
-import { ArrowLeft, ArrowUpRight, MessageCircle, BookOpen, Check } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, MessageCircle, BookOpen, Check, QrCode } from 'lucide-react';
+import { UpiPaymentModal } from './UpiPaymentModal';
 
 interface CourseDetailPageProps {
   course?: Course | null;
   allCourses?: Course[];
   onEnquireCourse: (courseName: string) => void;
+  onBuyCourse?: (course: Course) => void;
 }
 
 export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
   course: propCourse,
   allCourses: propAllCourses,
   onEnquireCourse,
+  onBuyCourse,
 }) => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [upiModalOpen, setUpiModalOpen] = useState(false);
 
   const allCourses = propAllCourses && propAllCourses.length > 0 ? propAllCourses : getCourses();
   const currentCourse = propCourse || (slug ? getCourseBySlug(slug) : allCourses[0]);
@@ -37,6 +41,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
   }
 
   const otherCourses = allCourses.filter((c) => c.id !== currentCourse.id);
+
+  const handleBuyNow = () => {
+    if (onBuyCourse) {
+      onBuyCourse(currentCourse);
+    } else {
+      setUpiModalOpen(true);
+    }
+  };
 
   return (
     <div className="bg-[#FCFBF7] min-h-screen py-10 sm:py-16">
@@ -75,12 +87,20 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <button
+                    onClick={handleBuyNow}
+                    className="bg-black hover:bg-neutral-900 text-[#F5D061] font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all cursor-pointer flex items-center gap-2 shadow-xs border border-[#D4AF37]/40"
+                  >
+                    <QrCode className="w-4 h-4 text-[#F5D061]" />
+                    <span>Buy Now (UPI QR)</span>
+                  </button>
+
                   <button
                     onClick={() => onEnquireCourse(currentCourse.name)}
-                    className="bg-gradient-to-r from-[#F0C94D] via-[#E5B83A] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-sm px-7 py-3 rounded-xl transition-all cursor-pointer flex items-center gap-2 shadow-xs"
+                    className="bg-gradient-to-r from-[#F0C94D] via-[#E5B83A] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all cursor-pointer flex items-center gap-2 shadow-xs"
                   >
-                    <span>Enquire Now</span>
+                    <span>Enquire</span>
                     <ArrowUpRight className="w-4 h-4 text-black" />
                   </button>
 
@@ -88,7 +108,7 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
                     href={`https://wa.me/918987599799?text=Hello%20Prashant%20Sir,%20I%20am%20interested%20in%20enquiring%20about%20the%20${encodeURIComponent(currentCourse.name)}%20course.`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-sm px-4 py-3 rounded-xl transition-colors cursor-pointer flex items-center justify-center shadow-xs"
+                    className="bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-sm px-3.5 py-3 rounded-xl transition-colors cursor-pointer flex items-center justify-center shadow-xs"
                     title="WhatsApp Enquiry"
                   >
                     <MessageCircle className="w-5 h-5 fill-current" />
@@ -171,6 +191,14 @@ export const CourseDetailPage: React.FC<CourseDetailPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Direct UPI Modal */}
+      <UpiPaymentModal
+        isOpen={upiModalOpen}
+        course={currentCourse}
+        onClose={() => setUpiModalOpen(false)}
+        onNavigateLogin={() => navigate('/student-login')}
+      />
     </div>
   );
 };

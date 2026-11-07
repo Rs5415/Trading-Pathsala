@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Course } from '../types';
-import { CheckCircle2, ArrowRight, Sparkles, Filter, BookOpen } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Sparkles, Filter, BookOpen, QrCode } from 'lucide-react';
+import { UpiPaymentModal } from '../components/UpiPaymentModal';
 
 interface CoursesPageProps {
   courses: Course[];
   onOpenEnquiry: (courseName?: string) => void;
+  onBuyCourse?: (course: Course) => void;
 }
 
-export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry }) => {
+export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry, onBuyCourse }) => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedCourseForPayment, setSelectedCourseForPayment] = useState<Course | null>(null);
 
   const categories = [
     'All',
@@ -23,6 +27,14 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry
     selectedCategory === 'All'
       ? courses
       : courses.filter((c) => c.category === selectedCategory);
+
+  const handleOpenBuy = (c: Course) => {
+    if (onBuyCourse) {
+      onBuyCourse(c);
+    } else {
+      setSelectedCourseForPayment(c);
+    }
+  };
 
   return (
     <div className="w-full bg-[#FCFBF7] min-h-screen py-10 sm:py-16">
@@ -132,19 +144,22 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <button
+                    onClick={() => handleOpenBuy(course)}
+                    className="bg-black hover:bg-neutral-900 text-[#F5D061] font-extrabold text-xs px-3 py-2.5 rounded-xl transition-all cursor-pointer shadow-2xs border border-[#D4AF37]/40 flex items-center gap-1"
+                    title="Pay via UPI QR"
+                  >
+                    <QrCode className="w-3.5 h-3.5" />
+                    <span>Buy Now</span>
+                  </button>
+
                   <Link
                     to={`/courses/${course.slug}`}
-                    className="bg-black hover:bg-neutral-900 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl transition-colors cursor-pointer"
+                    className="bg-white hover:bg-neutral-100 text-[#18181B] border border-gray-300 font-bold text-xs px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
                   >
-                    View Details
+                    Details
                   </Link>
-                  <button
-                    onClick={() => onOpenEnquiry(course.name)}
-                    className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs px-3.5 py-2.5 rounded-xl transition-all cursor-pointer shadow-2xs"
-                  >
-                    Enquire
-                  </button>
                 </div>
               </div>
             </div>
@@ -186,6 +201,14 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry
           </div>
         </div>
       </div>
+
+      {/* UPI Payment Modal */}
+      <UpiPaymentModal
+        isOpen={Boolean(selectedCourseForPayment)}
+        course={selectedCourseForPayment}
+        onClose={() => setSelectedCourseForPayment(null)}
+        onNavigateLogin={() => navigate('/student-login')}
+      />
     </div>
   );
 };

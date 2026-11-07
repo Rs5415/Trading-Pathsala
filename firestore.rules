@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // HELPER FUNCTIONS
+    // =========================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
+    }
+
+    // =========================================================================
+    // ADMINS COLLECTION
+    // =========================================================================
+    match /admins/{adminId} {
+      // Direct non-circular check: Any authenticated user can read their own admin doc
+      allow get: if isSignedIn() && request.auth.uid == adminId;
+      // Admins can list other admin accounts
+      allow list: if isAdmin();
+      // Only existing admins or initial Console provisioning can write to admins
+      allow write: if isAdmin();
+    }
+
+    // =========================================================================
+    // USERS COLLECTION
+    // =========================================================================
+    match /users/{userId} {
+      // User can read their own profile, or an admin can read any profile
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+
+      // Student registration:
+      // Must set their own uid as doc ID, must set role to 'student' (or must be admin already)
+      allow create: if isOwner(userId) && (
+        request.resource.data.role == 'student' || isAdmin()
+      );
+
+      // Updates:
+      // Owners can update their personal details, but cannot elevate role to 'admin' unless already admin
+      // Admins can update any field
+      allow update: if (
+        isOwner(userId) &&
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.uid == resource.data.uid
+      ) || isAdmin();
+
+      // Deletion only by admin
+      allow delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // COURSES COLLECTION
+    // =========================================================================
+    match /courses/{courseId} {
+      // Public read so all visitors and prospective students can view catalog
+      allow read: if true;
+
+      // Only administrators can create, update, or delete courses
+      allow write: if isAdmin();
+    }
+
+    // =========================================================================
+    // ORDERS COLLECTION (UPI PAYMENT VERIFICATION)
+    // =========================================================================
+    match /orders/{orderId} {
+      // Students can read their own orders; admins can read all orders
+      allow get: if isSignedIn() && (resource.data.studentUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.studentUid == request.auth.uid || isAdmin());
+
+      // Student creating an order:
+      // Must be signed in, studentUid must match request.auth.uid, initial status must be 'pending'
+      allow create: if isSignedIn() &&
+        request.resource.data.studentUid == request.auth.uid &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.amount is number &&
+        request.resource.data.amount > 0 &&
+        request.resource.data.utr is string &&
+        request.resource.data.utr.size() >= 6;
+
+      // Student cannot modify orders once placed; only admin can approve or reject
+      allow update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // ENROLLMENTS COLLECTION
+    // =========================================================================
+    match /enrollments/{enrollmentId} {
+      // Students can read their own course enrollments; admins can read all
+      allow get: if isSignedIn() && (resource.data.studentUid == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.studentUid == request.auth.uid || isAdmin());
+
+      // Only administrators can grant or revoke course enrollments
+      allow write: if isAdmin();
+    }
+
+    // =========================================================================
+    // SETTINGS COLLECTION
+    // =========================================================================
+    match /settings/{settingId} {
+      // Public read for general settings (UPI ID, payee name, instructions, address)
+      allow read: if true;
+
+      // Only administrators can change UPI ID, QR URL, or contact details
+      allow write: if isAdmin();
+    }
+
+    // =========================================================================
+    // OFFERS & NOTIFICATIONS COLLECTIONS
+    // =========================================================================
+    match /offers/{offerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
