@@ -137,6 +137,10 @@ function AppContent() {
             element={<StudentLogin onOpenEnquiry={handleOpenEnquiry} />}
           />
           <Route
+            path="/dashboard"
+            element={<StudentLogin onOpenEnquiry={handleOpenEnquiry} />}
+          />
+          <Route
             path="/admin"
             element={<AdminDashboard />}
           />
