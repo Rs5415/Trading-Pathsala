@@ -92,12 +92,12 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry
                 </div>
 
                 {/* Content */}
-                <div className="p-6 space-y-4">
+                <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
                   <div className="space-y-1">
-                    <h2 className="text-xl font-bold text-[#18181B] group-hover:text-[#916E16] transition-colors leading-snug">
+                    <h2 className="text-lg sm:text-xl font-bold text-[#18181B] group-hover:text-[#916E16] transition-colors leading-snug">
                       {course.name}
                     </h2>
-                    <p className="text-sm text-[#52525B] leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#52525B] leading-relaxed">
                       {course.shortDescription}
                     </p>
                   </div>
@@ -134,20 +134,20 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry
               </div>
 
               {/* Price & Action Strip */}
-              <div className="p-6 pt-0 border-t border-[#E8E2D5] mt-4 flex items-center justify-between">
+              <div className="p-4 sm:p-6 pt-0 border-t border-[#E8E2D5] mt-4 flex flex-wrap items-center justify-between gap-2.5">
                 <div>
-                  <div className="text-[11px] uppercase tracking-wider text-[#71717A] font-medium">
+                  <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#71717A] font-medium">
                     Program Fee
                   </div>
-                  <div className="text-2xl font-black text-[#916E16]">
+                  <div className="text-xl sm:text-2xl font-black text-[#916E16]">
                     ₹{course.price.toLocaleString('en-IN')}
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     onClick={() => handleOpenBuy(course)}
-                    className="bg-black hover:bg-neutral-900 text-[#F5D061] font-extrabold text-xs px-3 py-2.5 rounded-xl transition-all cursor-pointer shadow-2xs border border-[#D4AF37]/40 flex items-center gap-1"
+                    className="bg-black hover:bg-neutral-900 text-[#F5D061] font-extrabold text-xs px-3 py-2 sm:py-2.5 rounded-xl transition-all cursor-pointer shadow-2xs border border-[#D4AF37]/40 flex items-center gap-1 min-h-[38px]"
                     title="Pay via UPI QR"
                   >
                     <QrCode className="w-3.5 h-3.5" />
@@ -156,7 +156,7 @@ export const CoursesPage: React.FC<CoursesPageProps> = ({ courses, onOpenEnquiry
 
                   <Link
                     to={`/courses/${course.slug}`}
-                    className="bg-white hover:bg-neutral-100 text-[#18181B] border border-gray-300 font-bold text-xs px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
+                    className="bg-white hover:bg-neutral-100 text-[#18181B] border border-gray-300 font-bold text-xs px-3 py-2 sm:py-2.5 rounded-xl transition-colors cursor-pointer min-h-[38px] flex items-center"
                   >
                     Details
                   </Link>

@@ -244,11 +244,12 @@ export const AdminDashboard: React.FC = () => {
       <div className="w-full bg-[#FCFBF7] min-h-screen py-12 sm:py-16 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-3xl border border-[#E8E2D5] p-6 sm:p-8 shadow-xs space-y-6">
           <div className="text-center space-y-3">
-            <div className="bg-[#0B0B0C] px-5 py-3 rounded-2xl border border-[#D4AF37]/50 inline-block shadow-sm">
+            <div className="bg-[#0B0B0C] px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-sm h-11 sm:h-13">
               <img
                 src={officialLogo}
                 alt="Trading Pathshala"
-                className="h-12 w-auto mx-auto object-contain"
+                className="h-8 sm:h-9 w-auto max-w-[170px] sm:max-w-[210px] mx-auto object-contain block"
+                style={{ aspectRatio: '210/48' }}
               />
             </div>
             <div className="space-y-1">
@@ -440,20 +441,21 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Dashboard Banner */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#E8E2D5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-[#0B0B0C] p-3 rounded-2xl border border-[#D4AF37]/50 shadow-xs">
+        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border border-[#E8E2D5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+          <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center gap-3 sm:gap-4">
+            <div className="bg-[#0B0B0C] px-3 py-1.5 rounded-xl border border-[#D4AF37]/50 shadow-xs shrink-0 inline-flex items-center self-start min-[480px]:self-auto h-11 sm:h-12">
               <img
                 src={officialLogo}
                 alt="Trading Pathshala"
-                className="h-10 w-auto object-contain"
+                className="h-8 sm:h-9 w-auto max-w-[150px] sm:max-w-[190px] object-contain block"
+                style={{ aspectRatio: '210/48' }}
               />
             </div>
             <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-[#916E16]">
+              <div className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#916E16]">
                 Administrator Control Center
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18181B]">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#18181B] leading-tight">
                 Trading Pathshala Management Desk
               </h1>
             </div>

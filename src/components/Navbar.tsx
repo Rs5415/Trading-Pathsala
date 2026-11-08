@@ -31,20 +31,21 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-[#0B0B0C] text-white border-b border-[#D4AF37]/30 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo on the Left */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
+          {/* Logo on the Left - Stable, fixed-aspect container */}
           <Link
             to="/"
             onClick={closeMobileMenu}
-            className="cursor-pointer flex items-center group py-2"
+            className="cursor-pointer flex items-center shrink-0 select-none py-1 group"
             aria-label="Trading Pathsala Home"
           >
-            <div className="bg-[#121415] px-3.5 py-1.5 rounded-xl border border-[#D4AF37]/50 shadow-xs flex items-center transition-transform group-hover:scale-[1.02]">
+            <div className="bg-[#121415] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl border border-[#D4AF37]/50 shadow-xs flex items-center justify-center shrink-0 h-11 sm:h-13 transition-transform group-hover:scale-[1.01]">
               <img
                 src={officialLogo}
                 alt="Trading Pathsala - Learn the Art of Trading"
-                className="h-11 sm:h-12 w-auto max-w-[210px] object-contain"
+                className="h-8 min-[360px]:h-9 sm:h-11 w-auto max-w-[135px] min-[360px]:max-w-[155px] min-[400px]:max-w-[185px] sm:max-w-[210px] object-contain block"
+                style={{ aspectRatio: '210/48' }}
               />
             </div>
           </Link>
@@ -69,7 +70,7 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
-          {/* User Auth Portal Actions on Right */}
+          {/* User Auth Portal Actions on Right (Desktop) */}
           <div className="hidden md:flex items-center gap-2.5">
             {isAdmin && (
               <Link
@@ -95,21 +96,22 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <div className="md:hidden flex items-center gap-2">
+          {/* Mobile Menu Toggle & Portal Button Aligned on Right */}
+          <div className="md:hidden flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Link
               to={isAdmin ? '/admin' : '/student-login'}
               onClick={closeMobileMenu}
-              className="text-xs font-bold text-black bg-[#E5B83A] px-3 py-2 rounded-lg"
+              className="text-[11px] min-[360px]:text-xs font-bold text-black bg-[#E5B83A] hover:bg-[#d4a82b] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition-colors shrink-0 flex items-center gap-1 shadow-2xs"
             >
-              {user ? (isAdmin ? 'Admin' : 'Portal') : 'Login'}
+              <User className="w-3.5 h-3.5 text-black" />
+              <span>{user ? (isAdmin ? 'Admin' : 'Portal') : 'Login'}</span>
             </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-gray-300 hover:text-white rounded-lg cursor-pointer"
+              className="p-1.5 sm:p-2 text-gray-300 hover:text-white rounded-lg cursor-pointer shrink-0 min-w-[38px] min-h-[38px] flex items-center justify-center"
               aria-label="Toggle navigation"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6 text-[#E5B83A]" /> : <Menu className="w-6 h-6 text-[#E5B83A]" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-[#E5B83A]" /> : <Menu className="w-5 h-5 text-[#E5B83A]" />}
             </button>
           </div>
         </div>

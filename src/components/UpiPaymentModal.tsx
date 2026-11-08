@@ -101,19 +101,22 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
       <div className="relative w-full max-w-xl bg-white rounded-3xl border border-[#E8E2D5] shadow-2xl overflow-hidden my-6">
         {/* Header Strip */}
-        <div className="bg-[#0B0B0C] px-6 py-5 text-white flex items-center justify-between border-b border-[#D4AF37]/30">
-          <div className="flex items-center gap-3">
-            <img
-              src={officialLogo}
-              alt="Trading Pathsala"
-              className="h-9 w-auto object-contain"
-            />
+        <div className="bg-[#0B0B0C] px-4 sm:px-6 py-3.5 sm:py-4 text-white flex items-center justify-between border-b border-[#D4AF37]/30 gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <div className="bg-[#121415] px-2.5 py-1 rounded-xl border border-[#D4AF37]/40 shadow-xs flex items-center h-10">
+              <img
+                src={officialLogo}
+                alt="Trading Pathsala"
+                className="h-7 sm:h-8 w-auto max-w-[125px] sm:max-w-[155px] object-contain block"
+                style={{ aspectRatio: '210/48' }}
+              />
+            </div>
             <div>
-              <div className="text-[11px] font-bold uppercase tracking-wider text-[#E5B83A]">
+              <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#E5B83A]">
                 Secure UPI Enrollment
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white">
-                Course Admission &amp; Payment
+              <h3 className="text-sm sm:text-base font-bold text-white leading-tight">
+                Course Admission
               </h3>
             </div>
           </div>

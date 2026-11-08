@@ -70,11 +70,12 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
       <div className="relative bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#E8E2D5] overflow-hidden">
         {/* Header with Logo and Close Button */}
         <div className="flex items-center justify-between pb-4 border-b border-[#E8E2D5] mb-5">
-          <div className="bg-[#0B0B0C] px-3.5 py-1.5 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-xs">
+          <div className="bg-[#0B0B0C] px-3 py-1.5 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-xs h-10 sm:h-11">
             <img
               src={officialLogo}
               alt="Trading Pathsala"
-              className="h-8 w-auto object-contain"
+              className="h-7 sm:h-8 w-auto max-w-[140px] sm:max-w-[160px] object-contain block"
+              style={{ aspectRatio: '210/48' }}
             />
           </div>
           <button

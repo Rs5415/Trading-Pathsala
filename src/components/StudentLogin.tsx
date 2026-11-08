@@ -222,41 +222,52 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
           <Navigate to="/admin" replace />
         ) : user ? (
           /* Logged In: Student Dashboard */
-          <div className="bg-white rounded-3xl border border-[#E8E2D5] p-6 sm:p-10 shadow-xs space-y-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8E2D5]">
-              <div className="flex items-center gap-4">
-                <div className="bg-[#0B0B0C] p-2.5 rounded-2xl border border-[#D4AF37]/50 shrink-0 shadow-xs">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#E8E2D5] p-4 sm:p-8 md:p-10 shadow-xs space-y-6 sm:space-y-8">
+            <div className="pb-6 border-b border-[#E8E2D5] space-y-4">
+              {/* Top row: Logo on the left, Sign Out on the right */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="bg-[#0B0B0C] px-3 py-1.5 rounded-xl border border-[#D4AF37]/50 shadow-xs shrink-0 flex items-center h-11 sm:h-12">
                   <img
                     src={officialLogo}
                     alt="Trading Pathsala"
-                    className="h-11 w-auto object-contain"
+                    className="h-8 sm:h-9 w-auto max-w-[150px] sm:max-w-[190px] object-contain block"
+                    style={{ aspectRatio: '210/48' }}
                   />
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[#916E16]">
-                      Student Portal Dashboard
-                    </span>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-                      Active Student
-                    </span>
-                  </div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18181B]">
-                    Welcome, {userProfile?.name || user.displayName || 'Trader'}
-                  </h1>
-                  <p className="text-xs sm:text-sm text-[#71717A]">
-                    Student ID: <span className="font-mono font-bold text-[#916E16]">{userProfile?.studentId || 'TP-ACTIVE'}</span> • {user.email}
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-center">
                 <button
                   onClick={handleLogout}
-                  className="bg-[#FAF7F0] hover:bg-[#F3EFE4] text-[#18181B] font-bold text-xs px-4 py-2.5 rounded-xl border border-[#E8E2D5] transition-colors cursor-pointer"
+                  className="bg-[#FAF7F0] hover:bg-[#F3EFE4] text-[#18181B] font-bold text-xs px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#E8E2D5] transition-colors cursor-pointer shrink-0 min-h-[38px] flex items-center justify-center shadow-2xs"
                 >
                   Sign Out
                 </button>
+              </div>
+
+              {/* Student Identification & Status Details */}
+              <div className="space-y-1.5 pt-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#916E16]">
+                    Student Portal Dashboard
+                  </span>
+                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
+                    Active Student
+                  </span>
+                </div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#18181B] leading-tight break-words">
+                  Welcome, {userProfile?.name || user.displayName || 'Trader'}
+                </h1>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-xs text-[#71717A] pt-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <span>Student ID:</span>
+                    <span className="font-mono font-bold text-[#916E16] bg-[#FAF2DE] px-2 py-0.5 rounded border border-[#E5B83A]/30">
+                      {userProfile?.studentId || 'TP-ACTIVE'}
+                    </span>
+                  </div>
+                  <span className="hidden sm:inline text-gray-300">•</span>
+                  <div className="text-neutral-700 break-all font-medium">
+                    {user.email}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -267,29 +278,29 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
               {/* Main Column: Enrolled Courses & Orders */}
               <div className="md:col-span-8 space-y-6">
                 {/* Active Courses */}
-                <div className="bg-[#FAF7F0] p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-[#18181B] flex items-center gap-2">
-                      <BookOpen className="w-5 h-5 text-[#916E16]" />
+                <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-base sm:text-lg font-bold text-[#18181B] flex items-center gap-2">
+                      <BookOpen className="w-4 sm:w-5 h-4 sm:h-5 text-[#916E16]" />
                       <span>Unlocked Courses</span>
                     </h3>
-                    <span className="text-xs font-bold bg-[#FAF2DE] text-[#916E16] border border-[#E5B83A]/30 px-2.5 py-1 rounded-md">
+                    <span className="text-[11px] sm:text-xs font-bold bg-[#FAF2DE] text-[#916E16] border border-[#E5B83A]/30 px-2.5 py-1 rounded-md">
                       {enrollments.length} Active {enrollments.length === 1 ? 'Program' : 'Programs'}
                     </span>
                   </div>
 
                   {enrollments.length === 0 ? (
-                    <div className="bg-white p-6 rounded-xl border border-[#E8E2D5] text-center space-y-3">
+                    <div className="bg-white p-5 sm:p-6 rounded-xl border border-[#E8E2D5] text-center space-y-3">
                       <p className="text-sm text-[#52525B]">
                         You don't have any approved course enrollments yet.
                       </p>
                       <Link
                         to="/courses"
-                        className="inline-block bg-black text-[#F5D061] text-xs font-bold px-4 py-2 rounded-xl"
+                        className="inline-block bg-black text-[#F5D061] text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs"
                       >
                         Explore Courses &amp; Buy via UPI →
                       </Link>
@@ -297,23 +308,24 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                   ) : (
                     <div className="space-y-3">
                       {enrollments.map((enr) => (
-                        <div key={enr.id} className="bg-white p-4 rounded-xl border border-[#E8E2D5] space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="font-bold text-[#18181B] text-base">{enr.courseName}</div>
-                            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                        <div key={enr.id} className="bg-white p-3.5 sm:p-4 rounded-xl border border-[#E8E2D5] space-y-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                            <div className="font-bold text-[#18181B] text-sm sm:text-base leading-snug">{enr.courseName}</div>
+                            <span className="self-start sm:self-auto text-[10px] sm:text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full shrink-0">
                               Active Access
                             </span>
                           </div>
-                          <div className="text-xs text-[#71717A]">
+                          <div className="text-[11px] sm:text-xs text-[#71717A] leading-relaxed">
                             Batch: {enr.batchName || 'Batch 14 (Mon - Thu, 8:00 PM IST)'} • Enrolled: {new Date(enr.enrolledAt).toLocaleDateString()}
                           </div>
-                          <div className="flex items-center justify-between text-xs pt-1">
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-1.5 border-t border-gray-100">
                             <span className="text-[#52525B]">Status: Live Mentorship Active</span>
                             <Link
                               to={`/courses/${enr.courseSlug}`}
-                              className="text-[#916E16] font-bold hover:underline"
+                              className="text-[#916E16] font-bold hover:underline inline-flex items-center gap-1 py-1"
                             >
-                              View Curriculum →
+                              <span>View Curriculum</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
                             </Link>
                           </div>
                         </div>
@@ -323,10 +335,10 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                 </div>
 
                 {/* Orders / Payment Status */}
-                <div className="bg-[#FAF7F0] p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
+                <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-[#18181B] flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-[#916E16]" />
+                    <h3 className="text-base sm:text-lg font-bold text-[#18181B] flex items-center gap-2">
+                      <Clock className="w-4 sm:w-5 h-4 sm:h-5 text-[#916E16]" />
                       <span>Payment &amp; Order Status</span>
                     </h3>
                   </div>
@@ -336,11 +348,11 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                   ) : (
                     <div className="space-y-3">
                       {orders.map((ord) => (
-                        <div key={ord.id} className="bg-white p-4 rounded-xl border border-[#E8E2D5] text-xs space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-[#18181B] text-sm">{ord.courseName}</span>
+                        <div key={ord.id} className="bg-white p-3.5 sm:p-4 rounded-xl border border-[#E8E2D5] text-xs space-y-2.5">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                            <span className="font-bold text-[#18181B] text-sm leading-snug">{ord.courseName}</span>
                             <span
-                              className={`px-2.5 py-1 rounded-full font-bold uppercase text-[10px] ${
+                              className={`self-start sm:self-auto px-2.5 py-0.5 rounded-full font-bold uppercase text-[10px] shrink-0 ${
                                 ord.status === 'approved'
                                   ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                                   : ord.status === 'pending'
@@ -351,27 +363,27 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                               {ord.status}
                             </span>
                           </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[#52525B]">
+                          <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-2 text-[#52525B] bg-[#FCFBF7] p-2.5 rounded-lg border border-[#E8E2D5]">
                             <div>
-                              <span className="text-gray-400 block">Amount:</span>
-                              <strong>₹{ord.amount.toLocaleString('en-IN')}</strong>
+                              <span className="text-[10px] uppercase text-gray-400 block font-semibold">Amount:</span>
+                              <strong className="text-neutral-900">₹{ord.amount.toLocaleString('en-IN')}</strong>
                             </div>
                             <div>
-                              <span className="text-gray-400 block">Submitted UTR:</span>
-                              <strong className="font-mono text-[#916E16]">{ord.utr}</strong>
+                              <span className="text-[10px] uppercase text-gray-400 block font-semibold">Submitted UTR:</span>
+                              <strong className="font-mono text-[#916E16] break-all select-all font-bold">{ord.utr}</strong>
                             </div>
                             <div>
-                              <span className="text-gray-400 block">Date:</span>
-                              {formatOrderDate(ord.createdAt)}
+                              <span className="text-[10px] uppercase text-gray-400 block font-semibold">Date:</span>
+                              <span className="text-neutral-700">{formatOrderDate(ord.createdAt)}</span>
                             </div>
                           </div>
                           {ord.status === 'pending' && (
-                            <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                            <p className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200 leading-relaxed">
                               Payment verification in progress. Our team will verify your UTR and grant course access shortly.
                             </p>
                           )}
                           {ord.status === 'rejected' && ord.rejectionReason && (
-                            <p className="text-[11px] text-red-700 bg-red-50 p-2 rounded-lg border border-red-200">
+                            <p className="text-[11px] text-red-800 bg-red-50 p-2.5 rounded-lg border border-red-200 leading-relaxed">
                               Verification note: {ord.rejectionReason}
                             </p>
                           )}
@@ -382,9 +394,9 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                 </div>
 
                 {/* Learning Materials & PDFs */}
-                <div className="bg-[#FAF7F0] p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
-                  <h3 className="text-lg font-bold text-[#18181B] flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-[#916E16]" />
+                <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
+                  <h3 className="text-base sm:text-lg font-bold text-[#18181B] flex items-center gap-2">
+                    <FileText className="w-4 sm:w-5 h-4 sm:h-5 text-[#916E16]" />
                     <span>Learning Study Notes &amp; Tools</span>
                   </h3>
                   <div className="space-y-2.5">
@@ -395,16 +407,19 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                     ].map((mat, idx) => (
                       <div
                         key={idx}
-                        className="bg-white p-3.5 rounded-xl border border-[#E8E2D5] flex items-center justify-between text-xs sm:text-sm"
+                        className="bg-white p-3 sm:p-3.5 rounded-xl border border-[#E8E2D5] flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-2.5 text-xs sm:text-sm"
                       >
-                        <span className="font-medium text-[#27272A]">{mat.title}</span>
+                        <div className="space-y-0.5">
+                          <span className="font-medium text-[#27272A] block leading-snug">{mat.title}</span>
+                          <span className="text-[11px] text-gray-400">{mat.size}</span>
+                        </div>
                         <a
                           href={`https://wa.me/918987599799?text=${encodeURIComponent(
                             `Hello Prashant Sir, please send me the download link for ${mat.title}. My Student ID is ${userProfile?.studentId || 'registered'}.`
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] text-black font-bold px-3 py-1.5 rounded-lg text-xs shadow-2xs inline-flex items-center gap-1"
+                          className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-bold px-3 py-2 rounded-lg text-xs shadow-2xs inline-flex items-center justify-center gap-1 self-start min-[480px]:self-auto min-h-[36px]"
                         >
                           Request File
                         </a>
@@ -416,29 +431,33 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
 
               {/* Sidebar */}
               <div className="md:col-span-4 space-y-6">
-                <div className="bg-[#FAF7F0] p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
+                <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-3">
                   <h3 className="font-bold text-base text-[#18181B] flex items-center gap-2">
                     <Bell className="w-4 h-4 text-[#C59B27]" />
                     <span>Batch Notice</span>
                   </h3>
                   <div className="space-y-3 text-xs">
                     <div className="p-3 bg-white rounded-xl border border-[#E8E2D5] space-y-1">
-                      <div className="font-bold text-[#916E16]">Live Market Q&A</div>
-                      <p className="text-[#52525B]">Saturday at 7:00 PM IST with Prashant Sir on Zoom/Meet.</p>
+                      <div className="font-bold text-[#916E16]">Live Market Q&amp;A</div>
+                      <p className="text-[#52525B] leading-relaxed">Saturday at 7:00 PM IST with Prashant Sir on Zoom/Meet.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-[#FAF7F0] p-6 rounded-2xl border border-[#E8E2D5] space-y-3">
+                <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-3">
                   <h3 className="font-bold text-base text-[#18181B]">Student Profile</h3>
                   <div className="space-y-2 text-xs text-[#52525B]">
                     <div className="flex justify-between py-1 border-b border-[#E8E2D5]">
                       <span>Name:</span>
-                      <strong className="text-[#18181B]">{userProfile?.name || user.displayName || 'Student'}</strong>
+                      <strong className="text-[#18181B] text-right">{userProfile?.name || user.displayName || 'Student'}</strong>
                     </div>
                     <div className="flex justify-between py-1 border-b border-[#E8E2D5]">
                       <span>Student ID:</span>
                       <strong className="font-mono text-[#916E16]">{userProfile?.studentId || 'Pending'}</strong>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-[#E8E2D5]">
+                      <span>Email:</span>
+                      <span className="text-[#18181B] font-medium break-all text-right max-w-[200px]">{user.email}</span>
                     </div>
                     <div className="flex justify-between py-1 border-b border-[#E8E2D5]">
                       <span>Role:</span>
@@ -455,23 +474,24 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
           </div>
         ) : (
           /* Authentication Box: Login / Register / Forgot Password */
-          <div className="max-w-md mx-auto bg-white rounded-3xl border border-[#E8E2D5] p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="max-w-md mx-auto bg-white rounded-2xl sm:rounded-3xl border border-[#E8E2D5] p-5 sm:p-8 shadow-xs space-y-5 sm:space-y-6">
             <div className="text-center space-y-3">
-              <div className="bg-[#0B0B0C] px-5 py-3 rounded-2xl border border-[#D4AF37]/50 inline-block shadow-sm">
+              <div className="bg-[#0B0B0C] px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-sm h-11 sm:h-13">
                 <img
                   src={officialLogo}
                   alt="Trading Pathsala - Learn the Art of Trading"
-                  className="h-12 sm:h-14 w-auto mx-auto object-contain"
+                  className="h-8 sm:h-9 w-auto max-w-[170px] sm:max-w-[210px] mx-auto object-contain block"
+                  style={{ aspectRatio: '210/48' }}
                 />
               </div>
-              <h1 className="text-2xl font-extrabold text-[#18181B]">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#18181B]">
                 {isForgotPassword
                   ? 'Reset Password'
                   : isRegistering
                   ? 'Student Registration'
                   : 'Student Login'}
               </h1>
-              <p className="text-xs sm:text-sm text-[#71717A]">
+              <p className="text-xs sm:text-sm text-[#71717A] leading-relaxed">
                 {isForgotPassword
                   ? 'Enter your registered email to receive a password reset link.'
                   : isRegistering

@@ -10,12 +10,13 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* Logo & Tagline */}
           <div className="md:col-span-4 space-y-4">
-            <Link to="/" className="inline-block">
-              <div className="bg-[#0B0B0C] p-3 rounded-xl border border-[#D4AF37]/50 inline-block shadow-xs">
+            <Link to="/" className="inline-block" aria-label="Trading Pathsala Home">
+              <div className="bg-[#0B0B0C] px-3.5 py-2 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-xs h-13 sm:h-14">
                 <img
                   src={officialLogo}
                   alt="Trading Pathsala - Learn the Art of Trading"
-                  className="h-14 w-auto max-w-[220px] object-contain"
+                  className="h-9 sm:h-10 w-auto max-w-[180px] sm:max-w-[220px] object-contain block"
+                  style={{ aspectRatio: '210/48' }}
                 />
               </div>
             </Link>

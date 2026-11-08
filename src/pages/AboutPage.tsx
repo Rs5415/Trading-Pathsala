@@ -77,11 +77,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenEnquiry }) => {
 
           <div className="lg:col-span-5 flex flex-col items-center">
             <div className="w-full bg-[#FAF7F0] rounded-2xl p-6 sm:p-8 border border-[#E8E2D5] text-center space-y-6 shadow-xs">
-              <div className="bg-[#0B0B0C] p-4 sm:p-5 rounded-xl border border-[#D4AF37]/50 inline-block shadow-md">
+              <div className="bg-[#0B0B0C] px-5 py-3 sm:px-6 sm:py-3.5 rounded-xl border border-[#D4AF37]/50 inline-flex items-center shadow-md">
                 <img
                   src={officialLogo}
                   alt="Trading Pathsala"
-                  className="h-20 sm:h-24 mx-auto object-contain"
+                  className="h-12 sm:h-16 w-auto max-w-[220px] sm:max-w-[260px] mx-auto object-contain block"
+                  style={{ aspectRatio: '210/48' }}
                 />
               </div>
 

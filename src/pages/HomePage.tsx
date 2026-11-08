@@ -98,15 +98,15 @@ export const HomePage: React.FC<HomePageProps> = ({ courses, onOpenEnquiry }) =>
                     </div>
                   </div>
 
-                  <div className="p-6 space-y-3">
-                    <h3 className="text-xl font-bold text-[#18181B] group-hover:text-[#916E16] transition-colors leading-snug">
+                  <div className="p-4 sm:p-6 space-y-3">
+                    <h3 className="text-lg sm:text-xl font-bold text-[#18181B] group-hover:text-[#916E16] transition-colors leading-snug">
                       {course.name}
                     </h3>
-                    <p className="text-sm text-[#52525B] line-clamp-2 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-[#52525B] line-clamp-2 leading-relaxed">
                       {course.shortDescription}
                     </p>
 
-                    <div className="flex flex-wrap gap-1.5 pt-2">
+                    <div className="flex flex-wrap gap-1.5 pt-1 sm:pt-2">
                       {course.tags.slice(0, 3).map((tag, idx) => (
                         <span
                           key={idx}
@@ -119,26 +119,26 @@ export const HomePage: React.FC<HomePageProps> = ({ courses, onOpenEnquiry }) =>
                   </div>
                 </div>
 
-                <div className="p-6 pt-0 border-t border-[#E8E2D5] mt-4 flex items-center justify-between">
+                <div className="p-4 sm:p-6 pt-0 border-t border-[#E8E2D5] mt-4 flex flex-wrap items-center justify-between gap-2.5">
                   <div>
-                    <div className="text-[11px] uppercase tracking-wider text-[#71717A] font-medium">
+                    <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#71717A] font-medium">
                       One-Time Fee
                     </div>
-                    <div className="text-xl font-black text-[#18181B]">
+                    <div className="text-xl sm:text-2xl font-black text-[#18181B]">
                       ₹{course.price.toLocaleString('en-IN')}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <Link
                       to={`/courses/${course.slug}`}
-                      className="bg-black hover:bg-neutral-900 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+                      className="bg-black hover:bg-neutral-900 text-white font-bold text-xs px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl transition-colors cursor-pointer min-h-[38px] flex items-center"
                     >
                       View Details
                     </Link>
                     <button
                       onClick={() => onOpenEnquiry(course.name)}
-                      className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-2xs"
+                      className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl transition-all cursor-pointer shadow-2xs min-h-[38px] flex items-center"
                     >
                       Enquire
                     </button>
