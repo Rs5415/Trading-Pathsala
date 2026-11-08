@@ -11,6 +11,7 @@ import {
   getInstituteSettings,
   updateInstituteSettings,
   seedCoursesAsAdmin,
+  formatOrderDate,
 } from '../services/firestoreService';
 import { getEnquiries, updateEnquiryStatus } from '../services/storage';
 import { Order, Course, InstituteSettings, Enquiry } from '../types';
@@ -624,10 +625,10 @@ export const AdminDashboard: React.FC = () => {
                           <span className="text-xs text-gray-400 font-mono">Ref: {ord.id}</span>
                         </div>
                         <div className="text-xs text-[#52525B]">
-                          Course: <strong className="text-[#18181B]">{ord.courseName}</strong> • Fee: <strong className="text-[#916E16]">₹{ord.amount.toLocaleString('en-IN')}</strong> • Date: {new Date(ord.createdAt).toLocaleString()}
+                          Course: <strong className="text-[#18181B]">{ord.courseName}</strong> • Fee: <strong className="text-[#916E16]">₹{ord.amount.toLocaleString('en-IN')}</strong> • Date: {formatOrderDate(ord.createdAt)}
                         </div>
                         <div className="text-xs text-[#71717A]">
-                          Student Email: <strong className="text-neutral-800">{ord.studentEmail}</strong> {ord.studentPhone && `• Phone: ${ord.studentPhone}`}
+                          Student Email: <strong className="text-neutral-800">{ord.studentEmail}</strong> {(ord.whatsappNumber || ord.studentPhone) && `• WhatsApp / Phone: ${ord.whatsappNumber || ord.studentPhone}`}
                         </div>
                       </div>
 

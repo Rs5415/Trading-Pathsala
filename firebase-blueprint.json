@@ -43,13 +43,14 @@
       }
     },
     "orders": {
-      "description": "UPI Course purchase orders with UTR transaction references",
+      "description": "UPI Course purchase orders with UTR transaction references (document ID is the 12-digit UTR)",
       "fields": {
-        "id": { "type": "string", "description": "Unique Order ID" },
+        "id": { "type": "string", "description": "Unique 12-digit UTR Order ID (orders/{cleanUtr})" },
         "studentUid": { "type": "string", "description": "UID of purchasing student" },
         "studentName": { "type": "string", "description": "Purchasing student name" },
         "studentEmail": { "type": "string", "description": "Purchasing student email" },
         "studentPhone": { "type": "string", "description": "WhatsApp contact number" },
+        "whatsappNumber": { "type": "string", "description": "WhatsApp contact number" },
         "courseId": { "type": "string", "description": "Selected course ID" },
         "courseName": { "type": "string", "description": "Selected course name" },
         "courseSlug": { "type": "string", "description": "Selected course slug" },
@@ -61,6 +62,15 @@
         "createdAt": { "type": "string", "description": "Order creation timestamp" },
         "updatedAt": { "type": "string", "description": "Order update timestamp" },
         "reviewedBy": { "type": "string", "description": "UID of reviewing admin" }
+      }
+    },
+    "utrs": {
+      "description": "Unique index of submitted UTR reference numbers to prevent duplicate transaction submissions",
+      "fields": {
+        "utr": { "type": "string", "description": "12-digit UPI Transaction Reference Number" },
+        "orderId": { "type": "string", "description": "Associated Order ID" },
+        "studentUid": { "type": "string", "description": "Student UID who submitted payment" },
+        "createdAt": { "type": "string", "description": "Submission timestamp" }
       }
     },
     "enrollments": {

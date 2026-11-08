@@ -63,7 +63,10 @@ export function handleFirestoreError(error: unknown, operation: OperationType, p
   console.error(`Firestore ${operation} failed on [${path}]: ${code} - ${detail}`);
 
   if (code === 'permission-denied') {
-    return `Access denied: You do not have permission to ${operation} ${path}. Please check that your account has the required role (e.g. Admin).`;
+    if (path.startsWith('orders') && operation === 'create') {
+      return `Access denied: Unable to submit order. Please ensure you are logged in with your student account and submit with a valid 12-digit UTR.`;
+    }
+    return `Access denied: You do not have permission to ${operation} ${path}. Please check your account permissions or log in again.`;
   }
   if (code === 'not-found') {
     return `Resource not found at ${path}.`;

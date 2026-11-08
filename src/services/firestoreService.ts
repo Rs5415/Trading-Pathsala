@@ -11,8 +11,9 @@ import {
   orderBy,
   limit,
   Timestamp,
+  serverTimestamp,
 } from 'firebase/firestore';
-import { db, isFirebaseConfigured, handleFirestoreError } from '../firebase';
+import { db, auth, isFirebaseConfigured, handleFirestoreError } from '../firebase';
 import {
   Course,
   Order,
@@ -165,23 +166,52 @@ export async function updateInstituteSettings(
 // ORDERS & UPI PAYMENT VERIFICATION SERVICE
 // -------------------------------------------------------------
 
+export function getOrderTimestamp(createdAt: any): number {
+  if (!createdAt) return 0;
+  if (typeof createdAt === 'number') return createdAt;
+  if (typeof createdAt === 'string') {
+    const parsed = new Date(createdAt).getTime();
+    return isNaN(parsed) ? 0 : parsed;
+  }
+  if (typeof createdAt.toDate === 'function') {
+    return createdAt.toDate().getTime();
+  }
+  if (typeof createdAt.seconds === 'number') {
+    return createdAt.seconds * 1000;
+  }
+  return 0;
+}
+
+export function formatOrderDate(createdAt: any): string {
+  if (!createdAt) return 'Recent';
+  const ts = getOrderTimestamp(createdAt);
+  if (!ts) return typeof createdAt === 'string' ? createdAt : 'Recent';
+  return new Date(ts).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
 export async function submitUpiOrder(orderData: {
   studentUid: string;
   studentName: string;
   studentEmail: string;
   studentPhone?: string;
+  whatsappNumber?: string;
   courseId: string;
   courseName: string;
   courseSlug: string;
   amount: number;
   utr: string;
 }): Promise<{ success: boolean; message: string; orderId?: string }> {
-  const cleanUtr = orderData.utr.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  // Enforce strictly 12 numeric digits for Indian UPI UTR / Transaction Reference ID
+  const cleanUtr = orderData.utr.trim().replace(/[^0-9]/g, '');
 
-  if (!cleanUtr || cleanUtr.length < 6) {
+  if (cleanUtr.length !== 12) {
     return {
       success: false,
-      message: 'Please provide a valid UTR / UPI Transaction Reference Number (min 6-12 alphanumeric characters).',
+      message: 'Please provide a valid 12-digit UTR / UPI Transaction Reference Number (digits only).',
     };
   }
 
@@ -192,46 +222,83 @@ export async function submitUpiOrder(orderData: {
     };
   }
 
-  try {
-    // Check for duplicate UTR in orders collection
-    const ordersRef = collection(db, 'orders');
-    const q = query(ordersRef, where('utr', '==', cleanUtr));
-    const duplicateSnap = await getDocs(q);
+  // Ensure studentUid and studentEmail are strictly bound to the currently authenticated user
+  const currentAuthUser = auth.currentUser;
+  if (!currentAuthUser) {
+    return {
+      success: false,
+      message: 'You must be logged in with a student account to submit a course order.',
+    };
+  }
 
-    if (!duplicateSnap.empty) {
+  const effectiveUid = currentAuthUser.uid;
+  const effectiveEmail = currentAuthUser.email || orderData.studentEmail || '';
+  const effectivePhone = String(orderData.whatsappNumber || orderData.studentPhone || '').trim();
+
+  // 1. Fast pre-check: Check if this student already submitted this UTR in their own orders
+  try {
+    const ordersRef = collection(db, 'orders');
+    const myOrdersQ = query(
+      ordersRef,
+      where('studentUid', '==', effectiveUid),
+      where('utr', '==', cleanUtr)
+    );
+    const myDuplicateSnap = await getDocs(myOrdersQ);
+    if (!myDuplicateSnap.empty) {
       return {
         success: false,
-        message: `This UTR (${cleanUtr}) has already been submitted for verification. If you have questions about your order, please contact institute WhatsApp support.`,
+        message: `You have already submitted an order with UTR (${cleanUtr}). Please check your Student Dashboard for verification status.`,
       };
     }
+  } catch (checkErr) {
+    console.warn('Student orders pre-check notice (proceeding with atomic creation):', checkErr);
+  }
 
-    const orderId = `ord_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
-    const newOrder: Order = {
-      id: orderId,
-      studentUid: orderData.studentUid,
-      studentName: orderData.studentName,
-      studentEmail: orderData.studentEmail,
-      studentPhone: orderData.studentPhone || '',
-      courseId: orderData.courseId,
-      courseName: orderData.courseName,
-      courseSlug: orderData.courseSlug,
-      amount: orderData.amount,
-      utr: cleanUtr,
-      paymentMethod: 'UPI',
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  // 2. Prepare the complete Firestore order payload with all required fields
+  const newOrder: Order = {
+    id: cleanUtr,
+    studentUid: effectiveUid,
+    studentEmail: effectiveEmail,
+    studentName: orderData.studentName || 'Student',
+    studentPhone: effectivePhone,
+    whatsappNumber: effectivePhone,
+    courseId: String(orderData.courseId),
+    courseName: String(orderData.courseName),
+    courseSlug: orderData.courseSlug || '',
+    amount: Number(orderData.amount),
+    utr: cleanUtr,
+    paymentMethod: 'UPI',
+    status: 'pending',
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
 
-    await setDoc(doc(db, 'orders', orderId), newOrder);
+  try {
+    // 3. Atomically create the order with UTR as the document ID: orders/{cleanUtr}
+    // Firestore rules permit students to CREATE a pending order for their own UID.
+    // If orders/{cleanUtr} already exists (duplicate submission), Firestore evaluates 'allow update'.
+    // Since 'update' is restricted to admins (isAdmin()), any duplicate attempt is blocked!
+    const orderDocRef = doc(db, 'orders', cleanUtr);
+    await setDoc(orderDocRef, newOrder);
 
     return {
       success: true,
       message: 'Payment details submitted successfully! Your order is pending verification by the admin.',
-      orderId,
+      orderId: cleanUtr,
     };
-  } catch (error) {
-    const errorMsg = handleFirestoreError(error, 'create', 'orders');
+  } catch (error: any) {
+    const errCode = error?.code || '';
+    const errMsg = error?.message || String(error);
+    console.error(`Order submission error on orders/${cleanUtr}:`, errCode, errMsg);
+
+    if (errCode === 'permission-denied') {
+      return {
+        success: false,
+        message: `Submission failed: This 12-digit UTR (${cleanUtr}) has already been submitted or access was restricted. Each UTR can only be registered once. If you already placed this order, please check your Student Dashboard or contact WhatsApp support.`,
+      };
+    }
+
+    const errorMsg = handleFirestoreError(error, 'create', `orders/${cleanUtr}`);
     return { success: false, message: errorMsg };
   }
 }
@@ -245,8 +312,8 @@ export async function getStudentOrders(studentUid: string): Promise<Order[]> {
     );
     const snap = await getDocs(q);
     const orders: Order[] = [];
-    snap.forEach((d) => orders.push(d.data() as Order));
-    return orders.sort((a, b) => (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    snap.forEach((d) => orders.push({ ...(d.data() as Order), id: d.id }));
+    return orders.sort((a, b) => getOrderTimestamp(b.createdAt) - getOrderTimestamp(a.createdAt));
   } catch (error) {
     console.warn(`Notice: orders query for student (${studentUid}) returned fallback:`, (error as any)?.message || error);
     return [];
@@ -258,8 +325,8 @@ export async function getAllOrders(): Promise<Order[]> {
   try {
     const snap = await getDocs(collection(db, 'orders'));
     const orders: Order[] = [];
-    snap.forEach((d) => orders.push(d.data() as Order));
-    return orders.sort((a, b) => (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    snap.forEach((d) => orders.push({ ...(d.data() as Order), id: d.id }));
+    return orders.sort((a, b) => getOrderTimestamp(b.createdAt) - getOrderTimestamp(a.createdAt));
   } catch (error) {
     handleFirestoreError(error, 'list', 'orders');
     return [];

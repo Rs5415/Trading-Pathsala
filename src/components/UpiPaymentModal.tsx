@@ -69,9 +69,9 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
       return;
     }
 
-    const cleanUtr = utrInput.trim().toUpperCase();
-    if (cleanUtr.length < 6) {
-      setErrorMessage('Please enter a valid 6-12 digit UTR / Transaction Reference Number.');
+    const cleanUtr = utrInput.trim().replace(/[^0-9]/g, '');
+    if (cleanUtr.length !== 12) {
+      setErrorMessage('Please enter your exact 12-digit UTR / UPI Transaction Reference Number (digits only).');
       return;
     }
 
@@ -79,12 +79,13 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
     const res = await submitUpiOrder({
       studentUid: user.uid,
       studentName: userProfile.name || user.displayName || 'Student',
-      studentEmail: userProfile.email || user.email || '',
+      studentEmail: user.email || userProfile.email || '',
       studentPhone: phoneInput.trim() || userProfile.phone || '',
+      whatsappNumber: phoneInput.trim() || userProfile.phone || '',
       courseId: course.id,
       courseName: course.name,
       courseSlug: course.slug,
-      amount: course.price,
+      amount: Number(course.price),
       utr: cleanUtr,
     });
     setLoading(false);
@@ -373,14 +374,14 @@ export const UpiPaymentModal: React.FC<UpiPaymentModalProps> = ({
                   <input
                     type="text"
                     required
-                    maxLength={24}
+                    maxLength={12}
                     value={utrInput}
-                    onChange={(e) => setUtrInput(e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase())}
-                    placeholder="e.g. 432109876543 (from GPay, PhonePe, Paytm, BHIM)"
+                    onChange={(e) => setUtrInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 12))}
+                    placeholder="e.g. 432109876543 (12 digits from GPay, PhonePe, Paytm, BHIM)"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CEBE] bg-[#FCFBF7] text-sm font-mono text-[#18181B] focus:outline-hidden focus:border-[#C59B27] tracking-wider"
                   />
                   <p className="text-[11px] text-[#71717A]">
-                    Every UPI payment generates a unique 12-digit UTR/UPI Ref number on your bank payment slip. Duplicate UTR submissions will be rejected.
+                    Every UPI payment generates a unique 12-digit numeric UTR/UPI Ref number on your bank payment slip. Duplicate UTR submissions will be rejected.
                   </p>
                 </div>
 

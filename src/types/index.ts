@@ -42,6 +42,7 @@ export interface Order {
   studentName: string;
   studentEmail: string;
   studentPhone?: string;
+  whatsappNumber?: string;
   courseId: string;
   courseName: string;
   courseSlug: string;
@@ -50,8 +51,8 @@ export interface Order {
   paymentMethod: 'UPI';
   status: OrderStatus;
   rejectionReason?: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdAt: any;
+  updatedAt?: any;
   reviewedBy?: string;
 }
 

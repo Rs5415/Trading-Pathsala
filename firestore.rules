@@ -74,23 +74,55 @@ service cloud.firestore {
 
     // =========================================================================
     // ORDERS COLLECTION (UPI PAYMENT VERIFICATION)
+    // Document ID is the globally unique 12-digit UTR (orders/{cleanUtr})
     // =========================================================================
     match /orders/{orderId} {
       // Students can read their own orders; admins can read all orders
       allow get: if isSignedIn() && (resource.data.studentUid == request.auth.uid || isAdmin());
       allow list: if isSignedIn() && (resource.data.studentUid == request.auth.uid || isAdmin());
 
-      // Student creating an order:
-      // Must be signed in, studentUid must match request.auth.uid, initial status must be 'pending'
-      allow create: if isSignedIn() &&
-        request.resource.data.studentUid == request.auth.uid &&
-        request.resource.data.status == 'pending' &&
-        request.resource.data.amount is number &&
-        request.resource.data.amount > 0 &&
-        request.resource.data.utr is string &&
-        request.resource.data.utr.size() >= 6;
+      // Student creating an order (create-only submission using UTR as document ID):
+      // 1. Must be authenticated
+      // 2. studentUid must match auth.uid
+      // 3. status must be 'pending'
+      // 4. amount must be a positive number
+      // 5. utr must be a 12-digit string matching the document ID {orderId}
+      // 6. studentEmail, courseId, courseName, and whatsappNumber must be valid strings
+      // Create-only submission guarantees atomic duplicate UTR protection without extra queries
+      allow create: if isSignedIn() && (
+        isAdmin() || (
+          request.resource.data.studentUid == request.auth.uid &&
+          request.resource.data.status == 'pending' &&
+          request.resource.data.amount is number &&
+          request.resource.data.amount > 0 &&
+          request.resource.data.utr is string &&
+          request.resource.data.utr == orderId &&
+          request.resource.data.utr.size() == 12 &&
+          request.resource.data.studentEmail is string &&
+          request.resource.data.courseId is string &&
+          request.resource.data.courseName is string &&
+          request.resource.data.whatsappNumber is string
+        )
+      );
 
-      // Student cannot modify orders once placed; only admin can approve or reject
+      // Students can NEVER update or delete orders once placed; only admin can approve or reject
+      allow update, delete: if isAdmin();
+    }
+
+    // =========================================================================
+    // UTRS COLLECTION (DUPLICATE TRANSACTION PREVENTION)
+    // =========================================================================
+    match /utrs/{utrNumber} {
+      // Any signed-in student can check if a UTR has already been submitted
+      allow get: if isSignedIn();
+      // Signed-in students can register their own UTR reference
+      allow create: if isSignedIn() && (
+        isAdmin() || (
+          request.resource.data.studentUid == request.auth.uid &&
+          request.resource.data.utr == utrNumber
+        )
+      );
+      // Only admins can delete or update UTR records
       allow update, delete: if isAdmin();
     }
 

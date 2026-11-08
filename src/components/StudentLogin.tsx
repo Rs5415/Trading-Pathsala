@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import officialLogo from '../assets/trading_pathshala_official_logo.png';
 import { useAuth } from '../context/AuthContext';
-import { getStudentEnrollments, getStudentOrders } from '../services/firestoreService';
+import { getStudentEnrollments, getStudentOrders, formatOrderDate } from '../services/firestoreService';
 import { Enrollment, Order } from '../types';
 import {
   Mail,
@@ -362,7 +362,7 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                             </div>
                             <div>
                               <span className="text-gray-400 block">Date:</span>
-                              {new Date(ord.createdAt).toLocaleDateString()}
+                              {formatOrderDate(ord.createdAt)}
                             </div>
                           </div>
                           {ord.status === 'pending' && (
