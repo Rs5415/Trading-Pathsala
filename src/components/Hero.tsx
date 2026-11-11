@@ -22,10 +22,10 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-[#18181B] tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#18181B] tracking-tight leading-tight">
                 Trading Pathshala
               </h1>
-              <div className="text-lg sm:text-2xl md:text-3xl font-extrabold text-[#C59B27] tracking-tight">
+              <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#C59B27] tracking-tight">
                 Learn • Practice • Grow
               </div>
             </div>
@@ -100,12 +100,11 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                 />
 
                 {/* Golden Bull Official Logo Badge Overlay */}
-                <div className="absolute top-3 right-3 bg-black/90 backdrop-blur-md p-1.5 px-2.5 sm:px-3 rounded-xl border border-[#E5B83A]/50 shadow-md flex items-center gap-2">
+                <div className="absolute top-3 right-3 bg-black/90 backdrop-blur-md p-1.5 px-3 rounded-xl border border-[#E5B83A]/50 shadow-md flex items-center gap-2">
                   <img
                     src={officialLogo}
                     alt="Trading Pathsala Logo"
-                    className="h-7 sm:h-9 w-auto object-contain"
-                    style={{ aspectRatio: '210/48' }}
+                    className="h-9 w-auto object-contain"
                   />
                 </div>
               </div>

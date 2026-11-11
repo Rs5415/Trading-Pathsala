@@ -33,21 +33,19 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 bg-[#0B0B0C] text-white border-b border-[#D4AF37]/30 shadow-md">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
-          {/* Logo on the Left - Stable, fixed-aspect container */}
+          {/* Logo on the Left - Clean, seamless & stable */}
           <Link
             to="/"
             onClick={closeMobileMenu}
             className="cursor-pointer flex items-center shrink-0 select-none py-1 group"
             aria-label="Trading Pathsala Home"
           >
-            <div className="bg-[#121415] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl border border-[#D4AF37]/50 shadow-xs flex items-center justify-center shrink-0 h-11 sm:h-13 transition-transform group-hover:scale-[1.01]">
-              <img
-                src={officialLogo}
-                alt="Trading Pathsala - Learn the Art of Trading"
-                className="h-8 min-[360px]:h-9 sm:h-11 w-auto max-w-[135px] min-[360px]:max-w-[155px] min-[400px]:max-w-[185px] sm:max-w-[210px] object-contain block"
-                style={{ aspectRatio: '210/48' }}
-              />
-            </div>
+            <img
+              src={officialLogo}
+              alt="Trading Pathsala - Learn the Art of Trading"
+              className="h-9 sm:h-12 w-auto max-w-[150px] min-[360px]:max-w-[170px] min-[400px]:max-w-[195px] sm:max-w-[220px] object-contain block transition-transform group-hover:scale-[1.01]"
+              style={{ aspectRatio: '210/48' }}
+            />
           </Link>
 
           {/* Desktop Navigation Links */}

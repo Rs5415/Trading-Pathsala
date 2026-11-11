@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Course } from '../types';
 import { Hero } from '../components/Hero';
-import { FeaturesSection } from '../components/FeaturesSection';
 import { CtaBanner } from '../components/CtaBanner';
 import { ArrowRight, Star, TrendingUp, CheckCircle2, ShieldCheck, Users } from 'lucide-react';
 
@@ -50,9 +49,6 @@ export const HomePage: React.FC<HomePageProps> = ({ courses, onOpenEnquiry }) =>
         }}
         onOpenEnquiry={() => onOpenEnquiry('General Admission Enquiry')}
       />
-
-      {/* 4 Feature Pillars */}
-      <FeaturesSection />
 
       {/* Featured Courses Showcase */}
       <section className="py-16 sm:py-24 bg-white border-b border-[#E8E2D5]">

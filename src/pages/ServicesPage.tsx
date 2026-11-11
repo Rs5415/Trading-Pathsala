@@ -135,7 +135,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onOpenEnquiry }) => 
             return (
               <div
                 key={svc.id}
-                className="bg-white rounded-3xl p-5 sm:p-7 border border-[#E8E2D5] shadow-xs hover:shadow-xl transition-all flex flex-col justify-between group"
+                className="bg-white rounded-3xl p-7 border border-[#E8E2D5] shadow-xs hover:shadow-xl transition-all flex flex-col justify-between group"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
