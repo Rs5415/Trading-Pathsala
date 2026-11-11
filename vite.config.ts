@@ -6,13 +6,20 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/Trading-Pathsala/',
+    // GitHub Pages and Firebase Hosting support
+    base:
+      process.env.GITHUB_PAGES === 'true'
+        ? '/Trading-Pathsala/'
+        : '/',
+
     plugins: [react(), tailwindcss()],
+
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
+
     server: {
       host: '0.0.0.0',
       port: 3000,
