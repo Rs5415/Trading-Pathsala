@@ -197,18 +197,12 @@ export const HomePage: React.FC<HomePageProps> = ({ courses, onOpenEnquiry }) =>
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center gap-4">
+              <div className="pt-2 flex items-center">
                 <Link
                   to="/about"
                   className="bg-black hover:bg-neutral-900 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all cursor-pointer shadow-xs"
                 >
                   Learn About Our Institute →
-                </Link>
-                <Link
-                  to="/services"
-                  className="text-sm font-bold text-[#916E16] hover:underline"
-                >
-                  Explore Mentorship Services →
                 </Link>
               </div>
             </div>

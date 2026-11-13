@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import officialLogo from '../assets/trading_pathshala_official_logo.png';
 import { useAuth } from '../context/AuthContext';
-import { getStudentEnrollments, getStudentOrders, formatOrderDate } from '../services/firestoreService';
-import { Enrollment, Order } from '../types';
+import {
+  formatOrderDate,
+  subscribeStudentEnrollments,
+  subscribeStudentOrders,
+  subscribeStudentBatchLinks,
+  validateExternalUrl,
+} from '../services/firestoreService';
+import { Enrollment, Order, BatchLink } from '../types';
 import {
   Mail,
   Lock,
@@ -22,6 +28,8 @@ import {
   User as UserIcon,
   Copy,
   Check,
+  Link2,
+  ChevronRight,
 } from 'lucide-react';
 
 interface StudentLoginProps {
@@ -64,17 +72,105 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingData, setLoadingData] = useState(false);
 
+  // Batch-wise private links states
+  const [openedBatchId, setOpenedBatchId] = useState<string | null>(null);
+  const [batchLinks, setBatchLinks] = useState<BatchLink[]>([]);
+  const [batchLinksLoading, setBatchLinksLoading] = useState(false);
+  const [batchLinksError, setBatchLinksError] = useState<string | null>(null);
+
+  // Real-time listeners for student enrollments & orders
   useEffect(() => {
-    if (user && isRoleVerified && !isAdmin) {
-      setLoadingData(true);
-      Promise.all([getStudentEnrollments(user.uid), getStudentOrders(user.uid)])
-        .then(([enrs, ords]) => {
-          setEnrollments(enrs);
-          setOrders(ords);
-        })
-        .finally(() => setLoadingData(false));
+    if (!user || !isRoleVerified || isAdmin) {
+      setEnrollments([]);
+      setOrders([]);
+      return;
     }
+
+    setLoadingData(true);
+    let enrDone = false;
+    let ordDone = false;
+    const markDone = () => {
+      if (enrDone && ordDone) setLoadingData(false);
+    };
+
+    const unsubEnrollments = subscribeStudentEnrollments(
+      user.uid,
+      (enrs) => {
+        setEnrollments(enrs);
+        enrDone = true;
+        markDone();
+      },
+      () => {
+        enrDone = true;
+        markDone();
+      }
+    );
+
+    const unsubOrders = subscribeStudentOrders(
+      user.uid,
+      (ords) => {
+        setOrders(ords);
+        ordDone = true;
+        markDone();
+      },
+      () => {
+        ordDone = true;
+        markDone();
+      }
+    );
+
+    return () => {
+      unsubEnrollments();
+      unsubOrders();
+    };
   }, [user, isRoleVerified, isAdmin]);
+
+  // Strict purchase verification: active enrollment must match an approved order
+  const approvedOrderIds = new Set(
+    orders.filter((o) => o.status === 'approved').map((o) => o.id)
+  );
+  const verifiedPurchasedBatches = enrollments.filter(
+    (enr) =>
+      enr.active === true &&
+      Boolean(user?.uid && enr.studentUid === user.uid) &&
+      Boolean(enr.orderId && approvedOrderIds.has(enr.orderId))
+  );
+
+  // Real-time listener for the opened purchased batch's published links
+  useEffect(() => {
+    if (!user || !isRoleVerified || isAdmin || !openedBatchId) {
+      setBatchLinks([]);
+      setBatchLinksError(null);
+      return;
+    }
+
+    const isVerifiedBatch = verifiedPurchasedBatches.some(
+      (b) => b.courseId === openedBatchId
+    );
+    if (!isVerifiedBatch) {
+      setOpenedBatchId(null);
+      setBatchLinks([]);
+      return;
+    }
+
+    setBatchLinksLoading(true);
+    setBatchLinksError(null);
+
+    const unsubLinks = subscribeStudentBatchLinks(
+      openedBatchId,
+      (links) => {
+        setBatchLinks(links);
+        setBatchLinksLoading(false);
+      },
+      (errMsg) => {
+        setBatchLinksError(errMsg);
+        setBatchLinks([]);
+        setBatchLinksLoading(false);
+      }
+    );
+
+    return () => unsubLinks();
+  }, [user, isRoleVerified, isAdmin, openedBatchId, enrollments, orders]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,6 +259,8 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
     setErrorMsg(null);
     setEnrollments([]);
     setOrders([]);
+    setOpenedBatchId(null);
+    setBatchLinks([]);
   };
 
   return (
@@ -279,8 +377,159 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8">
-              {/* Main Column: Enrolled Courses & Orders */}
+              {/* Main Column: Purchased Batches, Enrolled Courses & Orders */}
               <div className="md:col-span-8 space-y-6">
+                {/* My Purchased Batches (Batch-Wise Private Links) */}
+                <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-base sm:text-lg font-bold text-[#18181B] flex items-center gap-2">
+                      <Link2 className="w-4 sm:w-5 h-4 sm:h-5 text-[#916E16]" />
+                      <span>My Purchased Batches</span>
+                    </h3>
+                    <span className="text-[11px] sm:text-xs font-bold bg-[#FAF2DE] text-[#916E16] border border-[#E5B83A]/30 px-2.5 py-1 rounded-md">
+                      {verifiedPurchasedBatches.length} Verified {verifiedPurchasedBatches.length === 1 ? 'Batch' : 'Batches'}
+                    </span>
+                  </div>
+
+                  {loadingData ? (
+                    <div className="bg-white p-5 rounded-xl border border-[#E8E2D5] text-center text-xs text-[#71717A]">
+                      Loading your verified batches...
+                    </div>
+                  ) : verifiedPurchasedBatches.length === 0 ? (
+                    <div className="bg-white p-5 sm:p-6 rounded-xl border border-[#E8E2D5] text-center space-y-3">
+                      <p className="text-sm text-[#52525B]">
+                        You have no active verified batch purchases yet. Once your payment is approved by the admin, your batch links will unlock automatically here.
+                      </p>
+                      <Link
+                        to="/courses"
+                        className="inline-block bg-black text-[#F5D061] text-xs font-bold px-4 py-2.5 rounded-xl shadow-xs"
+                      >
+                        Browse Courses →
+                      </Link>
+                    </div>
+                  ) : openedBatchId ? (
+                    /* Opened Purchased Batch View */
+                    (() => {
+                      const activeBatch = verifiedPurchasedBatches.find(
+                        (b) => b.courseId === openedBatchId
+                      );
+                      return (
+                        <div className="space-y-4">
+                          <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-[#D4AF37]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <div className="space-y-0.5">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#916E16]">
+                                Purchased Batch Resources
+                              </span>
+                              <h4 className="font-extrabold text-base sm:text-lg text-[#18181B]">
+                                {activeBatch?.courseName || 'Course Batch'}
+                              </h4>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setOpenedBatchId(null)}
+                              className="self-start sm:self-auto text-xs font-bold bg-[#FAF7F0] hover:bg-[#F3EFE4] text-[#18181B] px-3.5 py-2 rounded-lg border border-[#E8E2D5] inline-flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <ArrowLeft className="w-3.5 h-3.5 text-[#916E16]" />
+                              <span>All My Batches</span>
+                            </button>
+                          </div>
+
+                          {batchLinksError ? (
+                            <div className="p-4 bg-red-50 text-red-700 text-xs rounded-xl border border-red-200">
+                              {batchLinksError}
+                            </div>
+                          ) : batchLinksLoading ? (
+                            <div className="bg-white p-6 rounded-xl border border-[#E8E2D5] text-center text-xs text-[#71717A]">
+                              Loading batch learning links...
+                            </div>
+                          ) : batchLinks.length === 0 ? (
+                            <div className="bg-white p-6 rounded-xl border border-[#E8E2D5] text-center space-y-1.5">
+                              <p className="font-bold text-sm text-[#18181B]">
+                                No published links available yet
+                              </p>
+                              <p className="text-xs text-[#71717A]">
+                                New links shared by your mentor for this batch will appear here automatically.
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {batchLinks.map((link) => {
+                                const urlValidation = validateExternalUrl(link.url);
+                                return (
+                                  <div
+                                    key={link.id}
+                                    className="bg-white p-4 sm:p-5 rounded-xl border border-[#E8E2D5] shadow-2xs space-y-3"
+                                  >
+                                    <h5 className="font-bold text-sm sm:text-base text-[#18181B] leading-snug">
+                                      {link.title}
+                                    </h5>
+
+                                    {/* Description ALWAYS displayed above the Open Link button */}
+                                    <p className="text-xs sm:text-sm text-[#52525B] leading-relaxed whitespace-pre-line">
+                                      {link.description}
+                                    </p>
+
+                                    <div className="pt-1">
+                                      {urlValidation.valid && urlValidation.normalizedUrl ? (
+                                        <a
+                                          href={urlValidation.normalizedUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-2xs transition-all cursor-pointer"
+                                        >
+                                          <span>Open Link</span>
+                                          <ExternalLink className="w-4 h-4 text-black" />
+                                        </a>
+                                      ) : (
+                                        <span className="text-xs text-red-600 font-semibold">
+                                          Invalid link URL
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    /* List of Purchased Batches */
+                    <div className="space-y-3">
+                      {verifiedPurchasedBatches.map((enr) => (
+                        <div
+                          key={enr.id}
+                          className="bg-white p-4 rounded-xl border border-[#E8E2D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-bold text-sm sm:text-base text-[#18181B]">
+                                {enr.courseName}
+                              </span>
+                              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                                Purchased
+                              </span>
+                            </div>
+                            <p className="text-xs text-[#71717A]">
+                              Tap below to view all published learning links for this batch.
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setOpenedBatchId(enr.courseId)}
+                            className="w-full sm:w-auto bg-black hover:bg-neutral-900 text-[#F5D061] font-bold text-xs px-4 py-2.5 rounded-xl inline-flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
+                          >
+                            <span>Open Batch Links</span>
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* Active Courses */}
                 <div className="bg-[#FAF7F0] p-4 sm:p-6 rounded-2xl border border-[#E8E2D5] space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -289,11 +538,11 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                       <span>Unlocked Courses</span>
                     </h3>
                     <span className="text-[11px] sm:text-xs font-bold bg-[#FAF2DE] text-[#916E16] border border-[#E5B83A]/30 px-2.5 py-1 rounded-md">
-                      {enrollments.length} Active {enrollments.length === 1 ? 'Program' : 'Programs'}
+                      {verifiedPurchasedBatches.length} Active {verifiedPurchasedBatches.length === 1 ? 'Program' : 'Programs'}
                     </span>
                   </div>
 
-                  {enrollments.length === 0 ? (
+                  {verifiedPurchasedBatches.length === 0 ? (
                     <div className="bg-white p-5 sm:p-6 rounded-xl border border-[#E8E2D5] text-center space-y-3">
                       <p className="text-sm text-[#52525B]">
                         You don't have any approved course enrollments yet.
@@ -307,7 +556,7 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {enrollments.map((enr) => (
+                      {verifiedPurchasedBatches.map((enr) => (
                         <div key={enr.id} className="bg-white p-3.5 sm:p-4 rounded-xl border border-[#E8E2D5] space-y-2">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                             <div className="font-bold text-[#18181B] text-sm sm:text-base leading-snug">{enr.courseName}</div>

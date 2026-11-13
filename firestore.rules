@@ -14,12 +14,48 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
       );
+    }
+
+    // Strict verified purchase check using authenticated UID, active enrollment, and approved order
+    function hasVerifiedPurchase(uid, batchId) {
+      return exists(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)) &&
+        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.studentUid == uid &&
+        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.courseId == batchId &&
+        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.active == true &&
+        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId is string &&
+        exists(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)) &&
+        get(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)).data.studentUid == uid &&
+        get(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)).data.courseId == batchId &&
+        get(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)).data.status == 'approved';
+    }
+
+    // Strict schema check for batch links (title, description, url, batchId, published, timestamps only)
+    function isValidBatchLink(data, batchId) {
+      return data.keys().hasAll(['title', 'description', 'url', 'batchId', 'published', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['title', 'description', 'url', 'batchId', 'published', 'createdAt', 'updatedAt']) &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 160 &&
+        data.description is string && data.description.size() >= 1 && data.description.size() <= 1000 &&
+        data.url is string && data.url.size() >= 8 && data.url.size() <= 2000 &&
+        data.url.matches('^https?://.*') &&
+        data.batchId is string && data.batchId == batchId &&
+        data.published is bool &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    // Default-deny fallback
+    match /{document=**} {
+      allow read, write: if false;
     }
 
     // =========================================================================
@@ -62,7 +98,7 @@ service cloud.firestore {
     }
 
     // =========================================================================
-    // COURSES COLLECTION
+    // COURSES COLLECTION & BATCH-WISE PRIVATE LINKS SUBCOLLECTION
     // =========================================================================
     match /courses/{courseId} {
       // Public read so all visitors and prospective students can view catalog
@@ -70,6 +106,41 @@ service cloud.firestore {
 
       // Only administrators can create, update, or delete courses
       allow write: if isAdmin();
+
+      // Private batch-wise learning links: /courses/{courseId}/links/{linkId}
+      match /links/{linkId} {
+        // Admin can read all links; students can read ONLY published links for batches with a verified active purchase
+        allow get: if isSignedIn() && isValidId(courseId) && isValidId(linkId) && (
+          isAdmin() || (
+            resource.data.published == true &&
+            hasVerifiedPurchase(request.auth.uid, courseId)
+          )
+        );
+
+        allow list: if isSignedIn() && isValidId(courseId) && (
+          isAdmin() || (
+            resource.data.published == true &&
+            hasVerifiedPurchase(request.auth.uid, courseId)
+          )
+        );
+
+        // Only administrators can create, update, publish/unpublish, or delete batch links
+        allow create: if isAdmin() &&
+          isValidId(courseId) &&
+          isValidId(linkId) &&
+          isValidBatchLink(request.resource.data, courseId) &&
+          request.resource.data.createdAt == request.time &&
+          request.resource.data.updatedAt == request.time;
+
+        allow update: if isAdmin() &&
+          isValidId(courseId) &&
+          isValidId(linkId) &&
+          isValidBatchLink(request.resource.data, courseId) &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.updatedAt == request.time;
+
+        allow delete: if isAdmin() && isValidId(courseId) && isValidId(linkId);
+      }
     }
 
     // =========================================================================

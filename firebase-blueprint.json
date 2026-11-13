@@ -123,6 +123,18 @@
         "date": { "type": "string", "description": "Display date" },
         "type": { "type": "string", "description": "info, alert, or update" }
       }
+    },
+    "batchLinks": {
+      "description": "Private text-and-URL learning links per course/batch under /courses/{batchId}/links/{linkId}",
+      "fields": {
+        "batchId": { "type": "string", "description": "Associated course/batch ID" },
+        "title": { "type": "string", "description": "Link title" },
+        "description": { "type": "string", "description": "Explanatory text shown above the Open Link button" },
+        "url": { "type": "string", "description": "External http/https resource URL" },
+        "published": { "type": "boolean", "description": "Whether visible to verified enrolled students" },
+        "createdAt": { "type": "string", "description": "Firestore server timestamp of creation" },
+        "updatedAt": { "type": "string", "description": "Firestore server timestamp of last update" }
+      }
     }
   }
 }

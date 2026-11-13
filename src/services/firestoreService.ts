@@ -10,6 +10,8 @@ import {
   where,
   orderBy,
   limit,
+  onSnapshot,
+  Unsubscribe,
   Timestamp,
   serverTimestamp,
 } from 'firebase/firestore';
@@ -18,6 +20,7 @@ import {
   Course,
   Order,
   Enrollment,
+  BatchLink,
   InstituteSettings,
   OfferItem,
   NotificationItem,
@@ -388,13 +391,33 @@ export async function rejectStudentOrder(
   }
   try {
     const orderRef = doc(db, 'orders', orderId);
+    const orderSnap = await getDoc(orderRef);
+    const now = new Date().toISOString();
+
     await updateDoc(orderRef, {
       status: 'rejected',
       rejectionReason: reason || 'UTR verification failed. Please contact support.',
-      updatedAt: new Date().toISOString(),
+      updatedAt: now,
       reviewedBy: adminUid,
     });
-    return { success: true, message: 'Order marked as rejected.' };
+
+    // If this order previously unlocked an enrollment, deactivate it immediately
+    if (orderSnap.exists()) {
+      const orderData = orderSnap.data() as Order;
+      if (orderData.studentUid && orderData.courseId) {
+        const enrollmentId = `${orderData.studentUid}_${orderData.courseId}`;
+        const enrollmentRef = doc(db, 'enrollments', enrollmentId);
+        const enrollmentSnap = await getDoc(enrollmentRef);
+        if (enrollmentSnap.exists()) {
+          const enrData = enrollmentSnap.data() as Enrollment;
+          if (!enrData.orderId || enrData.orderId === orderId) {
+            await updateDoc(enrollmentRef, { active: false });
+          }
+        }
+      }
+    }
+
+    return { success: true, message: 'Order marked as rejected and batch access revoked.' };
   } catch (error) {
     const msg = handleFirestoreError(error, 'update', `orders/${orderId}`);
     return { success: false, message: msg };
@@ -490,6 +513,269 @@ export async function createNotification(
     return { success: true };
   } catch (error) {
     const msg = handleFirestoreError(error, 'create', `notifications/${item.id}`);
+    return { success: false, message: msg };
+  }
+}
+
+// -------------------------------------------------------------
+// REAL-TIME STUDENT ENROLLMENT & ORDER SUBSCRIPTIONS
+// -------------------------------------------------------------
+
+export function subscribeStudentEnrollments(
+  studentUid: string,
+  onData: (enrollments: Enrollment[]) => void,
+  onError?: (errMsg: string) => void
+): Unsubscribe {
+  if (!isFirebaseConfigured || !studentUid) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(collection(db, 'enrollments'), where('studentUid', '==', studentUid));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const list: Enrollment[] = [];
+      snap.forEach((d) => {
+        const data = d.data() as Enrollment;
+        if (data.active === true) {
+          list.push({ ...data, id: d.id });
+        }
+      });
+      onData(list);
+    },
+    (error) => {
+      const msg = handleFirestoreError(error, 'list', `enrollments(${studentUid})`);
+      if (onError) onError(msg);
+    }
+  );
+}
+
+export function subscribeStudentOrders(
+  studentUid: string,
+  onData: (orders: Order[]) => void,
+  onError?: (errMsg: string) => void
+): Unsubscribe {
+  if (!isFirebaseConfigured || !studentUid) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(collection(db, 'orders'), where('studentUid', '==', studentUid));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const list: Order[] = [];
+      snap.forEach((d) => list.push({ ...(d.data() as Order), id: d.id }));
+      list.sort((a, b) => getOrderTimestamp(b.createdAt) - getOrderTimestamp(a.createdAt));
+      onData(list);
+    },
+    (error) => {
+      const msg = handleFirestoreError(error, 'list', `orders(${studentUid})`);
+      if (onError) onError(msg);
+    }
+  );
+}
+
+// -------------------------------------------------------------
+// BATCH-WISE PRIVATE LINKS SERVICE (/courses/{batchId}/links/{linkId})
+// -------------------------------------------------------------
+
+export function validateExternalUrl(rawUrl: string): {
+  valid: boolean;
+  normalizedUrl?: string;
+  message?: string;
+} {
+  const trimmed = rawUrl.trim();
+  if (!trimmed) {
+    return { valid: false, message: 'Please enter a valid URL.' };
+  }
+  if (!/^https?:\/\//i.test(trimmed)) {
+    return {
+      valid: false,
+      message: 'URL must start with https:// or http:// (for example: https://example.com).',
+    };
+  }
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return { valid: false, message: 'Only http:// and https:// links are allowed.' };
+    }
+    return { valid: true, normalizedUrl: parsed.toString() };
+  } catch {
+    return { valid: false, message: 'Please enter a valid external URL.' };
+  }
+}
+
+export function subscribeBatchLinksAdmin(
+  batchId: string,
+  onData: (links: BatchLink[]) => void,
+  onError?: (errMsg: string) => void
+): Unsubscribe {
+  if (!isFirebaseConfigured || !batchId) {
+    onData([]);
+    return () => {};
+  }
+  const linksRef = collection(db, 'courses', batchId, 'links');
+  return onSnapshot(
+    linksRef,
+    (snap) => {
+      const list: BatchLink[] = [];
+      snap.forEach((d) => {
+        list.push({ ...(d.data() as Omit<BatchLink, 'id'>), id: d.id });
+      });
+      list.sort((a, b) => getOrderTimestamp(b.createdAt) - getOrderTimestamp(a.createdAt));
+      onData(list);
+    },
+    (error) => {
+      const msg = handleFirestoreError(error, 'list', `courses/${batchId}/links`);
+      if (onError) onError(msg);
+    }
+  );
+}
+
+export function subscribeStudentBatchLinks(
+  batchId: string,
+  onData: (links: BatchLink[]) => void,
+  onError?: (errMsg: string) => void
+): Unsubscribe {
+  if (!isFirebaseConfigured || !batchId) {
+    onData([]);
+    return () => {};
+  }
+  const q = query(
+    collection(db, 'courses', batchId, 'links'),
+    where('published', '==', true)
+  );
+  return onSnapshot(
+    q,
+    (snap) => {
+      const list: BatchLink[] = [];
+      snap.forEach((d) => {
+        const data = d.data() as Omit<BatchLink, 'id'>;
+        if (data.published === true) {
+          list.push({ ...data, id: d.id });
+        }
+      });
+      list.sort((a, b) => getOrderTimestamp(b.createdAt) - getOrderTimestamp(a.createdAt));
+      onData(list);
+    },
+    (error) => {
+      const msg = handleFirestoreError(error, 'list', `courses/${batchId}/links`);
+      if (onError) onError(msg);
+    }
+  );
+}
+
+export async function saveBatchLink(params: {
+  id?: string;
+  originalBatchId?: string;
+  batchId: string;
+  title: string;
+  description: string;
+  url: string;
+  published: boolean;
+}): Promise<{ success: boolean; message: string; linkId?: string }> {
+  if (!isFirebaseConfigured) {
+    return { success: false, message: 'Firebase is not configured.' };
+  }
+
+  const cleanBatchId = params.batchId.trim();
+  const cleanTitle = params.title.trim();
+  const cleanDesc = params.description.trim();
+  const urlCheck = validateExternalUrl(params.url);
+
+  if (!cleanBatchId) {
+    return { success: false, message: 'Please select a batch / course.' };
+  }
+  if (!cleanTitle || cleanTitle.length > 160) {
+    return { success: false, message: 'Link Title is required (max 160 characters).' };
+  }
+  if (!cleanDesc || cleanDesc.length > 1000) {
+    return { success: false, message: 'Description is required (max 1000 characters).' };
+  }
+  if (!urlCheck.valid || !urlCheck.normalizedUrl) {
+    return { success: false, message: urlCheck.message || 'Invalid URL.' };
+  }
+
+  const isUpdateSameBatch = Boolean(
+    params.id && (!params.originalBatchId || params.originalBatchId === cleanBatchId)
+  );
+  const linkId = params.id || `link-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+  try {
+    const linkRef = doc(db, 'courses', cleanBatchId, 'links', linkId);
+
+    if (isUpdateSameBatch) {
+      await updateDoc(linkRef, {
+        title: cleanTitle,
+        description: cleanDesc,
+        url: urlCheck.normalizedUrl,
+        batchId: cleanBatchId,
+        published: Boolean(params.published),
+        updatedAt: serverTimestamp(),
+      });
+    } else {
+      await setDoc(linkRef, {
+        title: cleanTitle,
+        description: cleanDesc,
+        url: urlCheck.normalizedUrl,
+        batchId: cleanBatchId,
+        published: Boolean(params.published),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      if (params.id && params.originalBatchId && params.originalBatchId !== cleanBatchId) {
+        await deleteDoc(doc(db, 'courses', params.originalBatchId, 'links', params.id));
+      }
+    }
+
+    return {
+      success: true,
+      message: params.id ? 'Batch link updated successfully.' : 'Batch link saved successfully.',
+      linkId,
+    };
+  } catch (error) {
+    const msg = handleFirestoreError(
+      error,
+      isUpdateSameBatch ? 'update' : 'create',
+      `courses/${cleanBatchId}/links/${linkId}`
+    );
+    return { success: false, message: msg };
+  }
+}
+
+export async function toggleBatchLinkPublish(
+  batchId: string,
+  linkId: string,
+  published: boolean
+): Promise<{ success: boolean; message?: string }> {
+  if (!isFirebaseConfigured) {
+    return { success: false, message: 'Firebase is not configured.' };
+  }
+  try {
+    await updateDoc(doc(db, 'courses', batchId, 'links', linkId), {
+      published,
+      updatedAt: serverTimestamp(),
+    });
+    return { success: true };
+  } catch (error) {
+    const msg = handleFirestoreError(error, 'update', `courses/${batchId}/links/${linkId}`);
+    return { success: false, message: msg };
+  }
+}
+
+export async function deleteBatchLink(
+  batchId: string,
+  linkId: string
+): Promise<{ success: boolean; message?: string }> {
+  if (!isFirebaseConfigured) {
+    return { success: false, message: 'Firebase is not configured.' };
+  }
+  try {
+    await deleteDoc(doc(db, 'courses', batchId, 'links', linkId));
+    return { success: true };
+  } catch (error) {
+    const msg = handleFirestoreError(error, 'delete', `courses/${batchId}/links/${linkId}`);
     return { success: false, message: msg };
   }
 }

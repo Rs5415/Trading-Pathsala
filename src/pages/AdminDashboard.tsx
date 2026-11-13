@@ -12,9 +12,13 @@ import {
   updateInstituteSettings,
   seedCoursesAsAdmin,
   formatOrderDate,
+  subscribeBatchLinksAdmin,
+  saveBatchLink,
+  toggleBatchLinkPublish,
+  deleteBatchLink,
 } from '../services/firestoreService';
 import { getEnquiries, updateEnquiryStatus } from '../services/storage';
-import { Order, Course, InstituteSettings, Enquiry } from '../types';
+import { Order, Course, InstituteSettings, Enquiry, BatchLink } from '../types';
 import officialLogo from '../assets/trading_pathshala_official_logo.png';
 import {
   Users,
@@ -38,12 +42,14 @@ import {
   Edit,
   Save,
   Eye,
+  EyeOff,
   LogOut,
   AlertTriangle,
   ExternalLink,
   Copy,
   Check,
   RefreshCw,
+  Link2,
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -61,7 +67,7 @@ export const AdminDashboard: React.FC = () => {
   } = useAuth();
 
   // Active Admin Tab
-  const [activeTab, setActiveTab] = useState<'orders' | 'courses' | 'settings' | 'enquiries'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'courses' | 'batch-links' | 'settings' | 'enquiries'>('orders');
 
   // Orders State
   const [orders, setOrders] = useState<Order[]>([]);
@@ -76,6 +82,20 @@ export const AdminDashboard: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [isCreatingCourse, setIsCreatingCourse] = useState(false);
+
+  // Batch-Wise Private Links State
+  const [selectedBatchId, setSelectedBatchId] = useState<string>('');
+  const [batchLinks, setBatchLinks] = useState<BatchLink[]>([]);
+  const [batchLinksLoading, setBatchLinksLoading] = useState(false);
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
+  const [editingOriginalBatchId, setEditingOriginalBatchId] = useState<string | null>(null);
+  const [editingLinkPublished, setEditingLinkPublished] = useState<boolean>(true);
+  const [linkFormBatchId, setLinkFormBatchId] = useState<string>('');
+  const [linkTitle, setLinkTitle] = useState<string>('');
+  const [linkDescription, setLinkDescription] = useState<string>('');
+  const [linkUrl, setLinkUrl] = useState<string>('');
+  const [linkSaving, setLinkSaving] = useState(false);
+  const [linkFeedback, setLinkFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Settings State
   const [settings, setSettings] = useState<InstituteSettings | null>(null);
@@ -104,6 +124,10 @@ export const AdminDashboard: React.FC = () => {
       ]);
       setOrders(ords);
       setCourses(crs);
+      if (crs.length > 0) {
+        setSelectedBatchId((prev) => prev || crs[0].id);
+        setLinkFormBatchId((prev) => prev || crs[0].id);
+      }
       setSettings(stg);
       setEnquiries(getEnquiries());
     } finally {
@@ -116,6 +140,26 @@ export const AdminDashboard: React.FC = () => {
       loadAllAdminData();
     }
   }, [isAdmin, isRoleVerified]);
+
+  useEffect(() => {
+    if (!isAdmin || !isRoleVerified || !selectedBatchId) {
+      setBatchLinks([]);
+      return;
+    }
+    setBatchLinksLoading(true);
+    const unsub = subscribeBatchLinksAdmin(
+      selectedBatchId,
+      (links) => {
+        setBatchLinks(links);
+        setBatchLinksLoading(false);
+      },
+      (errMsg) => {
+        setLinkFeedback({ type: 'error', text: errMsg });
+        setBatchLinksLoading(false);
+      }
+    );
+    return () => unsub();
+  }, [isAdmin, isRoleVerified, selectedBatchId]);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,6 +251,76 @@ export const AdminDashboard: React.FC = () => {
   const handleEnquiryStatusChange = (id: string, status: 'New' | 'Contacted' | 'Closed') => {
     const updated = updateEnquiryStatus(id, status);
     setEnquiries(updated);
+  };
+
+  // Batch Link Actions
+  const resetLinkForm = (nextBatchId?: string) => {
+    setEditingLinkId(null);
+    setEditingOriginalBatchId(null);
+    setEditingLinkPublished(true);
+    setLinkFormBatchId(nextBatchId || selectedBatchId || courses[0]?.id || '');
+    setLinkTitle('');
+    setLinkDescription('');
+    setLinkUrl('');
+  };
+
+  const handleSaveBatchLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLinkFeedback(null);
+    setLinkSaving(true);
+    const targetBatchId = linkFormBatchId || selectedBatchId;
+    const res = await saveBatchLink({
+      id: editingLinkId || undefined,
+      originalBatchId: editingOriginalBatchId || undefined,
+      batchId: targetBatchId,
+      title: linkTitle,
+      description: linkDescription,
+      url: linkUrl,
+      published: editingLinkId ? editingLinkPublished : true,
+    });
+    setLinkSaving(false);
+    if (res.success) {
+      setSelectedBatchId(targetBatchId);
+      resetLinkForm(targetBatchId);
+      setLinkFeedback({ type: 'success', text: res.message });
+      setTimeout(() => setLinkFeedback(null), 3500);
+    } else {
+      setLinkFeedback({ type: 'error', text: res.message });
+    }
+  };
+
+  const handleEditBatchLink = (link: BatchLink) => {
+    setLinkFeedback(null);
+    setEditingLinkId(link.id);
+    setEditingOriginalBatchId(link.batchId);
+    setEditingLinkPublished(link.published);
+    setLinkFormBatchId(link.batchId);
+    setLinkTitle(link.title);
+    setLinkDescription(link.description);
+    setLinkUrl(link.url);
+  };
+
+  const handleToggleLinkPublish = async (link: BatchLink) => {
+    setLinkFeedback(null);
+    const res = await toggleBatchLinkPublish(link.batchId, link.id, !link.published);
+    if (!res.success && res.message) {
+      setLinkFeedback({ type: 'error', text: res.message });
+    }
+  };
+
+  const handleDeleteBatchLink = async (link: BatchLink) => {
+    if (!confirm(`Delete link "${link.title}"? Students will immediately lose access to it.`)) return;
+    setLinkFeedback(null);
+    const res = await deleteBatchLink(link.batchId, link.id);
+    if (res.success) {
+      if (editingLinkId === link.id) {
+        resetLinkForm(link.batchId);
+      }
+      setLinkFeedback({ type: 'success', text: 'Batch link deleted.' });
+      setTimeout(() => setLinkFeedback(null), 3000);
+    } else if (res.message) {
+      setLinkFeedback({ type: 'error', text: res.message });
+    }
   };
 
   // Filtered Orders
@@ -523,6 +637,18 @@ export const AdminDashboard: React.FC = () => {
           >
             <BookOpen className="w-4 h-4" />
             <span>Course Management ({courses.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('batch-links')}
+            className={`px-5 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+              activeTab === 'batch-links'
+                ? 'bg-black text-[#F5D061] shadow-sm'
+                : 'bg-white text-[#52525B] hover:bg-[#FAF7F0] border border-[#E8E2D5]'
+            }`}
+          >
+            <Link2 className="w-4 h-4" />
+            <span>Manage Batch Links</span>
           </button>
 
           <button
@@ -942,6 +1068,260 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB: MANAGE BATCH LINKS */}
+        {activeTab === 'batch-links' && (
+          <div className="bg-white rounded-3xl border border-[#E8E2D5] p-6 sm:p-8 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h2 className="text-xl font-bold text-[#18181B]">
+                  Manage Batch Links
+                </h2>
+                <p className="text-xs text-[#71717A]">
+                  Share private external learning links per course or batch. Only students with verified active purchases for the selected batch can view published links.
+                </p>
+              </div>
+            </div>
+
+            {linkFeedback && (
+              <div
+                className={`p-3.5 text-xs rounded-xl border flex items-center gap-2 ${
+                  linkFeedback.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                    : 'bg-red-50 text-red-700 border-red-200'
+                }`}
+              >
+                {linkFeedback.type === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                )}
+                <span>{linkFeedback.text}</span>
+              </div>
+            )}
+
+            {/* Add / Edit Batch Link Form (Strictly 4 Fields) */}
+            <form
+              onSubmit={handleSaveBatchLink}
+              className="p-5 sm:p-6 bg-[#FAF7F0] rounded-2xl border border-[#E8E2D5] space-y-4"
+            >
+              <div className="flex items-center justify-between gap-2 pb-2 border-b border-[#E8E2D5]">
+                <h3 className="font-bold text-sm sm:text-base text-[#18181B]">
+                  {editingLinkId ? 'Edit Batch Link' : 'Add New Batch Link'}
+                </h3>
+                {editingLinkId && (
+                  <button
+                    type="button"
+                    onClick={() => resetLinkForm(selectedBatchId)}
+                    className="text-xs font-bold text-[#71717A] hover:text-black cursor-pointer"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
+                    Batch Selection *
+                  </label>
+                  <select
+                    required
+                    value={linkFormBatchId}
+                    onChange={(e) => {
+                      const nextId = e.target.value;
+                      setLinkFormBatchId(nextId);
+                      if (!editingLinkId) {
+                        setSelectedBatchId(nextId);
+                      }
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5CEBE] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27]"
+                  >
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
+                    Link Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={160}
+                    value={linkTitle}
+                    onChange={(e) => setLinkTitle(e.target.value)}
+                    placeholder="e.g., Important Trading Resource"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5CEBE] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27]"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
+                    Description / Explanatory Text *
+                  </label>
+                  <textarea
+                    rows={3}
+                    required
+                    maxLength={1000}
+                    value={linkDescription}
+                    onChange={(e) => setLinkDescription(e.target.value)}
+                    placeholder="Open this link to access the important learning resource shared by your mentor."
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5CEBE] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27]"
+                  />
+                </div>
+
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#27272A]">
+                    URL *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    maxLength={2000}
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    placeholder="https://example.com"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5CEBE] text-sm font-mono text-[#18181B] focus:outline-hidden focus:border-[#C59B27]"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={linkSaving}
+                  className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-xs inline-flex items-center gap-2 cursor-pointer disabled:opacity-60"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{linkSaving ? 'Saving...' : 'Save Link'}</span>
+                </button>
+              </div>
+            </form>
+
+            {/* Filter by Batch & Existing Links List */}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#E8E2D5]">
+                <div className="space-y-0.5">
+                  <h3 className="text-base font-bold text-[#18181B]">
+                    Links for Selected Batch
+                  </h3>
+                  <p className="text-xs text-[#71717A]">
+                    Published links appear immediately for verified buyers of this batch.
+                  </p>
+                </div>
+
+                <div className="sm:min-w-[260px]">
+                  <select
+                    value={selectedBatchId}
+                    onChange={(e) => {
+                      setSelectedBatchId(e.target.value);
+                      if (!editingLinkId) {
+                        setLinkFormBatchId(e.target.value);
+                      }
+                    }}
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#FCFBF7] border border-[#D5CEBE] text-xs sm:text-sm font-bold text-[#18181B] focus:outline-hidden focus:border-[#C59B27]"
+                  >
+                    {courses.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        Batch: {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {batchLinksLoading ? (
+                <div className="py-10 text-center text-xs text-[#71717A]">
+                  Loading batch links from Firestore...
+                </div>
+              ) : batchLinks.length === 0 ? (
+                <div className="p-8 text-center text-[#71717A] text-sm bg-[#FCFBF7] rounded-2xl border border-[#E8E2D5] space-y-1">
+                  <p className="font-bold text-[#18181B]">No links added for this batch yet.</p>
+                  <p className="text-xs">Use the form above to share a learning resource link for this batch.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {batchLinks.map((link) => (
+                    <div
+                      key={link.id}
+                      className="p-4 sm:p-5 rounded-2xl bg-[#FCFBF7] border border-[#E8E2D5] space-y-3"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="font-bold text-base text-[#18181B]">{link.title}</h4>
+                            <span
+                              className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                                link.published
+                                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                  : 'bg-amber-100 text-amber-800 border border-amber-300'
+                              }`}
+                            >
+                              {link.published ? 'Published' : 'Unpublished'}
+                            </span>
+                          </div>
+                          <p className="text-xs sm:text-sm text-[#52525B] leading-relaxed">
+                            {link.description}
+                          </p>
+                          <div className="text-xs font-mono text-[#916E16] break-all pt-0.5">
+                            {link.url}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 shrink-0 pt-1 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleLinkPublish(link)}
+                            className={`text-xs font-bold px-3 py-1.5 rounded-lg border inline-flex items-center gap-1.5 cursor-pointer ${
+                              link.published
+                                ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
+                                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                            }`}
+                          >
+                            {link.published ? (
+                              <>
+                                <EyeOff className="w-3.5 h-3.5" />
+                                <span>Unpublish</span>
+                              </>
+                            ) : (
+                              <>
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>Publish</span>
+                              </>
+                            )}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleEditBatchLink(link)}
+                            className="text-xs font-bold bg-white hover:bg-gray-50 border border-gray-300 px-3 py-1.5 rounded-lg inline-flex items-center gap-1 text-[#18181B] cursor-pointer"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                            <span>Edit</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteBatchLink(link)}
+                            className="text-xs font-bold bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

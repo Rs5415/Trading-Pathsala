@@ -37,14 +37,14 @@ export const Navbar: React.FC = () => {
           <Link
             to="/"
             onClick={closeMobileMenu}
-            className="cursor-pointer flex items-center shrink-0 select-none py-1 group"
+            className="cursor-pointer flex items-center justify-start shrink-0 select-none py-1 group"
             aria-label="Trading Pathsala Home"
           >
             <img
               src={officialLogo}
               alt="Trading Pathsala - Learn the Art of Trading"
-              className="h-9 sm:h-12 w-auto max-w-[150px] min-[360px]:max-w-[170px] min-[400px]:max-w-[195px] sm:max-w-[220px] object-contain block transition-transform group-hover:scale-[1.01]"
-              style={{ aspectRatio: '210/48' }}
+              className="h-[42px] sm:h-14 w-auto object-contain object-left block transition-transform group-hover:scale-[1.01]"
+              style={{ aspectRatio: '2000/923' }}
             />
           </Link>
 

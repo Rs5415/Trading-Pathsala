@@ -70,6 +70,17 @@ export interface Enrollment {
   batchName?: string;
 }
 
+export interface BatchLink {
+  id: string;
+  batchId: string;
+  title: string;
+  description: string;
+  url: string;
+  published: boolean;
+  createdAt?: any;
+  updatedAt?: any;
+}
+
 export interface OfferItem {
   id: string;
   title: string;
