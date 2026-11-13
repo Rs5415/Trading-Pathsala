@@ -25,6 +25,36 @@ const STORAGE_KEYS = {
 };
 
 // ==========================================
+// COURSE IMAGE PATH FIX
+// ==========================================
+
+function normalizeCourseImage(course: Course): Course {
+  const defaultCourse = INITIAL_COURSES.find(
+    (item) => item.id === course.id
+  );
+
+  if (!defaultCourse) return course;
+
+  const imagePath = course.image || '';
+
+  const isOldImagePath =
+    !imagePath ||
+    imagePath.includes('/src/assets/') ||
+    imagePath.includes('/assets/') ||
+    imagePath.startsWith('assets/') ||
+    imagePath.startsWith('./assets/');
+
+  if (isOldImagePath) {
+    return {
+      ...course,
+      image: defaultCourse.image,
+    };
+  }
+
+  return course;
+}
+
+// ==========================================
 // COURSES
 // ==========================================
 
@@ -37,6 +67,7 @@ export function getCourses(): Course[] {
         STORAGE_KEYS.COURSES,
         JSON.stringify(INITIAL_COURSES)
       );
+
       return INITIAL_COURSES;
     }
 
@@ -47,35 +78,13 @@ export function getCourses(): Course[] {
         STORAGE_KEYS.COURSES,
         JSON.stringify(INITIAL_COURSES)
       );
+
       return INITIAL_COURSES;
     }
 
-    // Refresh outdated bundled course image paths
-    const updatedCourses = parsed.map((course: Course) => {
-      const defaultCourse = INITIAL_COURSES.find(
-        (item) => item.id === course.id
-      );
-
-      if (!defaultCourse) {
-        return course;
-      }
-
-      const imagePath = course.image || '';
-
-      const isBundledImage =
-        imagePath.includes('/assets/') ||
-        imagePath.startsWith('assets/') ||
-        imagePath.startsWith('./assets/');
-
-      if (!imagePath || isBundledImage) {
-        return {
-          ...course,
-          image: defaultCourse.image,
-        };
-      }
-
-      return course;
-    });
+    const updatedCourses = parsed.map((course: Course) =>
+      normalizeCourseImage(course)
+    );
 
     localStorage.setItem(
       STORAGE_KEYS.COURSES,
@@ -85,7 +94,7 @@ export function getCourses(): Course[] {
     return updatedCourses;
 
   } catch (e) {
-    console.error('Error loading courses', e);
+    console.error('Error loading courses:', e);
     return INITIAL_COURSES;
   }
 }
@@ -101,7 +110,7 @@ export function saveCourse(course: Course): Course[] {
 
   if (index >= 0) {
     updated = [...courses];
-    updated[index] = course;
+    updated[index] = normalizeCourseImage(course);
   } else {
     updated = [course, ...courses];
   }
@@ -144,7 +153,7 @@ export function getResources(): LearningResourceItem[] {
     return JSON.parse(raw);
 
   } catch (e) {
-    console.error('Error loading resources', e);
+    console.error('Error loading resources:', e);
     return INITIAL_RESOURCES;
   }
 }
@@ -185,7 +194,7 @@ export function getAnnouncements(): AnnouncementItem[] {
     return JSON.parse(raw);
 
   } catch (e) {
-    console.error('Error loading announcements', e);
+    console.error('Error loading announcements:', e);
     return INITIAL_ANNOUNCEMENTS;
   }
 }
@@ -205,7 +214,7 @@ export function getEnquiries(): Enquiry[] {
     return JSON.parse(raw);
 
   } catch (e) {
-    console.error('Error loading enquiries', e);
+    console.error('Error loading enquiries:', e);
     return [];
   }
 }
@@ -275,7 +284,7 @@ export function getWebsiteContent(): WebsiteContent {
     };
 
   } catch (e) {
-    console.error('Error loading website content', e);
+    console.error('Error loading website content:', e);
     return INITIAL_WEBSITE_CONTENT;
   }
 }
@@ -304,7 +313,7 @@ export function getStudentSession(): StudentUser | null {
     return JSON.parse(raw);
 
   } catch (e) {
-    console.error('Error loading student session', e);
+    console.error('Error loading student session:', e);
     return null;
   }
 }
@@ -379,7 +388,6 @@ export function loginStudent(
     };
   }
 
-  // Allow demo login or registered user
   const user: StudentUser = {
     id: 'student-demo-1',
     name: 'Aarav Sharma',
