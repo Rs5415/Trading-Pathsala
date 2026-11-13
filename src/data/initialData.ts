@@ -1,10 +1,5 @@
+
 import { Course, LearningResourceItem, AnnouncementItem, WebsiteContent } from '../types';
-import optionBuyingImg from '../assets/images/course_option_buying_1793712656164.jpg';
-import techAnalysisImg from '../assets/images/course_technical_analysis_1793416380606.jpg';
-import optionSellingImg from '../assets/images/course_options_derivatives_1793416378747.jpg';
-import moneyTreeImg from '../assets/images/course_money_tree_1793712671531.jpg';
-import swingTradingImg from '../assets/images/course_price_action_1793416379591.jpg';
-import forexTradingImg from '../assets/images/course_forex_trading_1793712685336.jpg';
 
 export const INITIAL_COURSES: Course[] = [
   {
@@ -15,7 +10,7 @@ export const INITIAL_COURSES: Course[] = [
     shortDescription: 'Master index options buying strategies, momentum triggers, strike selection, and disciplined stop-loss risk control.',
     fullDescription: 'Designed for traders focusing on Nifty and Bank Nifty index options. Learn how to time explosive momentum breakouts, select optimal strike prices, manage theta decay, and strictly budget risk.',
     price: 15000,
-    image: optionBuyingImg,
+    image: '/images/course_option_buying_1793712656164.jpg',
     tags: ['Index Options', 'Nifty & Bank Nifty', 'Momentum', 'Strike Selection'],
     coverageTopics: [
       'Index Momentum & Breakout Triggers',
@@ -43,7 +38,7 @@ export const INITIAL_COURSES: Course[] = [
     shortDescription: 'Covers Indian, Forex and Crypto markets. Topics include Order Flow, Volume Profile and MSS (Market Structure Shift).',
     fullDescription: 'Our flagship multi-market technical analysis curriculum. Learn institutional chart reading across Indian Equities, Forex, and Crypto using Order Flow, Volume Profile, and Market Structure Shift (MSS).',
     price: 30000,
-    image: techAnalysisImg,
+    image: '/images/course_technical_analysis_1793416380606.jpg',
     tags: ['Technical Analysis', 'Order Flow', 'Volume Profile', 'MSS', 'Multi-Market'],
     coverageTopics: [
       'Indian Markets (Equities, Indices & Commodities)',
@@ -73,7 +68,7 @@ export const INITIAL_COURSES: Course[] = [
     shortDescription: 'Advanced option selling strategies, theta decay harvesting, margin optimization, and defensive adjustments.',
     fullDescription: 'Learn to trade like institutional writers using statistical probabilities and time decay. Covers credit spreads, iron condors, delta-neutral management, and firefighting adjustments.',
     price: 30000,
-    image: optionSellingImg,
+    image: '/images/course_options_derivatives_1793416378747.jpg',
     tags: ['Option Selling', 'Theta Harvesting', 'Credit Spreads', 'Risk Control'],
     coverageTopics: [
       'Option Greeks In-Depth (Delta, Theta, Vega)',
@@ -101,7 +96,7 @@ export const INITIAL_COURSES: Course[] = [
     shortDescription: 'Long-term equity compounding, fundamental company evaluation, and disciplined wealth creation methodologies.',
     fullDescription: 'A disciplined financial education course guiding investors on building long-term sustainable wealth through equity compounding, fundamental analysis, and asset allocation.',
     price: 15000,
-    image: moneyTreeImg,
+    image: '/images/course_money_tree_1793712671531.jpg',
     tags: ['Wealth Building', 'Compounding', 'Investing', 'Financial Planning'],
     coverageTopics: [
       'The Mathematics of Exponential Compounding',
@@ -129,7 +124,7 @@ export const INITIAL_COURSES: Course[] = [
     shortDescription: 'Swing trading concepts, multi-day breakout setups, sector rotation, and positional risk control.',
     fullDescription: 'Designed for working professionals and positional traders. Learn systematic screeners, stage analysis, pullback entries, and disciplined trailing stop management.',
     price: 15000,
-    image: swingTradingImg,
+    image: '/images/course_price_action_1793416379591.jpg',
     tags: ['Swing Trading', 'Positional', 'Sector Rotation', 'Breakouts'],
     coverageTopics: [
       'Market Cycle & Stage Analysis',
@@ -157,7 +152,7 @@ export const INITIAL_COURSES: Course[] = [
     shortDescription: 'Forex market learning, major currency pairs, global macroeconomic sessions, and international risk management.',
     fullDescription: 'Explore the largest financial market in the world. Learn how central bank monetary policies, economic data releases, and interbank liquidity cycles drive currency pairs.',
     price: 20000,
-    image: forexTradingImg,
+    image: '/images/course_forex_trading_1793712685336.jpg',
     tags: ['Forex', 'Currency Pairs', 'Global Macro', 'Session Liquidity'],
     coverageTopics: [
       'Currency Pairs Hierarchy (Majors, Minors)',
