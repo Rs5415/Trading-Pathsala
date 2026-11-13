@@ -142,7 +142,7 @@ export const AdminDashboard: React.FC = () => {
   }, [isAdmin, isRoleVerified]);
 
   useEffect(() => {
-    if (!isAdmin || !isRoleVerified || !selectedBatchId) {
+    if (!isAdmin || !isRoleVerified || activeTab !== 'batch-links' || !selectedBatchId) {
       setBatchLinks([]);
       return;
     }
@@ -152,6 +152,7 @@ export const AdminDashboard: React.FC = () => {
       (links) => {
         setBatchLinks(links);
         setBatchLinksLoading(false);
+        setLinkFeedback((prev) => (prev?.type === 'error' ? null : prev));
       },
       (errMsg) => {
         setLinkFeedback({ type: 'error', text: errMsg });
@@ -159,7 +160,7 @@ export const AdminDashboard: React.FC = () => {
       }
     );
     return () => unsub();
-  }, [isAdmin, isRoleVerified, selectedBatchId]);
+  }, [isAdmin, isRoleVerified, activeTab, selectedBatchId]);
 
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -302,8 +303,17 @@ export const AdminDashboard: React.FC = () => {
 
   const handleToggleLinkPublish = async (link: BatchLink) => {
     setLinkFeedback(null);
-    const res = await toggleBatchLinkPublish(link.batchId, link.id, !link.published);
-    if (!res.success && res.message) {
+    const nextPublished = !link.published;
+    const res = await toggleBatchLinkPublish(link.batchId, link.id, nextPublished);
+    if (res.success) {
+      setLinkFeedback({
+        type: 'success',
+        text: nextPublished
+          ? `Link "${link.title}" published for verified students.`
+          : `Link "${link.title}" unpublished.`,
+      });
+      setTimeout(() => setLinkFeedback(null), 3000);
+    } else if (res.message) {
       setLinkFeedback({ type: 'error', text: res.message });
     }
   };
@@ -1140,11 +1150,15 @@ export const AdminDashboard: React.FC = () => {
                     }}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5CEBE] text-sm text-[#18181B] focus:outline-hidden focus:border-[#C59B27]"
                   >
-                    {courses.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
+                    {courses.length === 0 ? (
+                      <option value="">No courses available</option>
+                    ) : (
+                      courses.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
@@ -1183,7 +1197,8 @@ export const AdminDashboard: React.FC = () => {
                     URL *
                   </label>
                   <input
-                    type="url"
+                    type="text"
+                    inputMode="url"
                     required
                     maxLength={2000}
                     value={linkUrl}
@@ -1200,8 +1215,16 @@ export const AdminDashboard: React.FC = () => {
                   disabled={linkSaving}
                   className="bg-gradient-to-r from-[#F0C94D] to-[#D4AF37] hover:brightness-105 text-black font-extrabold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-xs inline-flex items-center gap-2 cursor-pointer disabled:opacity-60"
                 >
-                  <Save className="w-4 h-4" />
-                  <span>{linkSaving ? 'Saving...' : 'Save Link'}</span>
+                  {editingLinkId ? <Save className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                  <span>
+                    {editingLinkId
+                      ? linkSaving
+                        ? 'Updating...'
+                        : 'Update Link'
+                      : linkSaving
+                      ? 'Adding...'
+                      : 'Add Link'}
+                  </span>
                 </button>
               </div>
             </form>
@@ -1211,7 +1234,7 @@ export const AdminDashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#E8E2D5]">
                 <div className="space-y-0.5">
                   <h3 className="text-base font-bold text-[#18181B]">
-                    Links for Selected Batch
+                    Links for Selected Batch ({batchLinks.length})
                   </h3>
                   <p className="text-xs text-[#71717A]">
                     Published links appear immediately for verified buyers of this batch.

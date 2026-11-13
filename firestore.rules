@@ -15,7 +15,7 @@ service cloud.firestore {
     }
 
     function isValidId(id) {
-      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
     }
 
     function isAdminUserDoc(userData) {
@@ -31,7 +31,10 @@ service cloud.firestore {
     }
 
     function isApprovedOrderData(uid, batchId, ordData) {
-      return ordData.studentUid == uid &&
+      return 'studentUid' in ordData &&
+        'courseId' in ordData &&
+        'status' in ordData &&
+        ordData.studentUid == uid &&
         ordData.courseId == batchId &&
         ordData.status == 'approved';
     }
@@ -44,10 +47,13 @@ service cloud.firestore {
     }
 
     function isValidActiveEnrollmentData(uid, batchId, enrData) {
-      return enrData.studentUid == uid &&
+      return 'studentUid' in enrData &&
+        'courseId' in enrData &&
+        'active' in enrData &&
+        'orderId' in enrData &&
+        enrData.studentUid == uid &&
         enrData.courseId == batchId &&
         enrData.active == true &&
-        'orderId' in enrData &&
         isOrderApproved(uid, batchId, enrData.orderId);
     }
 
@@ -137,8 +143,8 @@ service cloud.firestore {
 
         allow list: if isSignedIn() && isValidId(courseId) && (
           isAdmin() || (
-            resource.data.published == true &&
-            hasVerifiedPurchase(request.auth.uid, courseId)
+            hasVerifiedPurchase(request.auth.uid, courseId) &&
+            resource.data.published == true
           )
         );
 

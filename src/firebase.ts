@@ -66,6 +66,9 @@ export function handleFirestoreError(error: unknown, operation: OperationType, p
     if (path.startsWith('orders') && operation === 'create') {
       return `Access denied: Unable to submit order. Please ensure you are logged in with your student account and submit with a valid 12-digit UTR.`;
     }
+    if (path.includes('/links')) {
+      return `Access denied on ${path}: Missing Firestore permissions. Please publish the updated firestore.rules in Firebase Console (Firestore Database → Rules) for project trading-pathsala-14c2e and verify your account role or active course purchase.`;
+    }
     return `Access denied: You do not have permission to ${operation} ${path}. Please check your account permissions or log in again.`;
   }
   if (code === 'not-found') {

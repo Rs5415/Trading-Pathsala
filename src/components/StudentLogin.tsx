@@ -125,16 +125,21 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
     };
   }, [user, isRoleVerified, isAdmin]);
 
-  // Strict purchase verification: active enrollment must match an approved order
-  const approvedOrderIds = new Set(
-    orders.filter((o) => o.status === 'approved').map((o) => o.id)
+  // Strict purchase verification: active enrollment must match an approved order for the same student & course
+  const approvedOrdersById = new Map(
+    orders.filter((o) => o.status === 'approved').map((o) => [o.id, o])
   );
-  const verifiedPurchasedBatches = enrollments.filter(
-    (enr) =>
-      enr.active === true &&
-      Boolean(user?.uid && enr.studentUid === user.uid) &&
-      Boolean(enr.orderId && approvedOrderIds.has(enr.orderId))
-  );
+  const verifiedPurchasedBatches = enrollments.filter((enr) => {
+    if (enr.active !== true || !user?.uid || enr.studentUid !== user.uid || !enr.orderId) {
+      return false;
+    }
+    const matchingOrder = approvedOrdersById.get(enr.orderId);
+    return Boolean(
+      matchingOrder &&
+        matchingOrder.studentUid === user.uid &&
+        matchingOrder.courseId === enr.courseId
+    );
+  });
 
   // Real-time listener for the opened purchased batch's published links
   useEffect(() => {
@@ -430,7 +435,7 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                               className="self-start sm:self-auto text-xs font-bold bg-[#FAF7F0] hover:bg-[#F3EFE4] text-[#18181B] px-3.5 py-2 rounded-lg border border-[#E8E2D5] inline-flex items-center gap-1.5 cursor-pointer"
                             >
                               <ArrowLeft className="w-3.5 h-3.5 text-[#916E16]" />
-                              <span>All My Batches</span>
+                              <span>Back to My Purchased Batches</span>
                             </button>
                           </div>
 
@@ -443,12 +448,9 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                               Loading batch learning links...
                             </div>
                           ) : batchLinks.length === 0 ? (
-                            <div className="bg-white p-6 rounded-xl border border-[#E8E2D5] text-center space-y-1.5">
-                              <p className="font-bold text-sm text-[#18181B]">
-                                No published links available yet
-                              </p>
-                              <p className="text-xs text-[#71717A]">
-                                New links shared by your mentor for this batch will appear here automatically.
+                            <div className="bg-white p-6 rounded-xl border border-[#E8E2D5] text-center">
+                              <p className="font-semibold text-sm text-[#52525B]">
+                                No resources have been added to this batch yet. Please check again later.
                               </p>
                             </div>
                           ) : (
@@ -512,7 +514,7 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                               </span>
                             </div>
                             <p className="text-xs text-[#71717A]">
-                              Tap below to view all published learning links for this batch.
+                              {enr.batchName ? `${enr.batchName} • ` : ''}Open this batch to view all published learning resources.
                             </p>
                           </div>
 
@@ -521,7 +523,7 @@ export const StudentLogin: React.FC<StudentLoginProps> = ({ onBackToHome, onOpen
                             onClick={() => setOpenedBatchId(enr.courseId)}
                             className="w-full sm:w-auto bg-black hover:bg-neutral-900 text-[#F5D061] font-bold text-xs px-4 py-2.5 rounded-xl inline-flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-2xs"
                           >
-                            <span>Open Batch Links</span>
+                            <span>Open Batch</span>
                             <ChevronRight className="w-4 h-4" />
                           </button>
                         </div>
