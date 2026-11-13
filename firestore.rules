@@ -18,25 +18,43 @@ service cloud.firestore {
       return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
+    function isAdminUserDoc(userData) {
+      return 'role' in userData && userData.role == 'admin';
+    }
+
     function isAdmin() {
       return isSignedIn() && (
         exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+         isAdminUserDoc(get(/databases/$(database)/documents/users/$(request.auth.uid)).data))
       );
     }
 
-    // Strict verified purchase check using authenticated UID, active enrollment, and approved order
+    function isApprovedOrderData(uid, batchId, ordData) {
+      return ordData.studentUid == uid &&
+        ordData.courseId == batchId &&
+        ordData.status == 'approved';
+    }
+
+    function isOrderApproved(uid, batchId, orderId) {
+      return orderId is string &&
+        orderId.size() > 0 &&
+        exists(/databases/$(database)/documents/orders/$(orderId)) &&
+        isApprovedOrderData(uid, batchId, get(/databases/$(database)/documents/orders/$(orderId)).data);
+    }
+
+    function isValidActiveEnrollmentData(uid, batchId, enrData) {
+      return enrData.studentUid == uid &&
+        enrData.courseId == batchId &&
+        enrData.active == true &&
+        'orderId' in enrData &&
+        isOrderApproved(uid, batchId, enrData.orderId);
+    }
+
+    // Strict verified purchase check (<= 4 doc reads total across enrollment + order)
     function hasVerifiedPurchase(uid, batchId) {
       return exists(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)) &&
-        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.studentUid == uid &&
-        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.courseId == batchId &&
-        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.active == true &&
-        get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId is string &&
-        exists(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)) &&
-        get(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)).data.studentUid == uid &&
-        get(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)).data.courseId == batchId &&
-        get(/databases/$(database)/documents/orders/$(get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data.orderId)).data.status == 'approved';
+        isValidActiveEnrollmentData(uid, batchId, get(/databases/$(database)/documents/enrollments/$(uid + '_' + batchId)).data);
     }
 
     // Strict schema check for batch links (title, description, url, batchId, published, timestamps only)
