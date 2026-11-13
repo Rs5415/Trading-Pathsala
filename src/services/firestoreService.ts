@@ -45,26 +45,58 @@ export const DEFAULT_SETTINGS: InstituteSettings = {
 // COURSES SERVICE
 // -------------------------------------------------------------
 
+
 export async function getCoursesList(): Promise<Course[]> {
+  const normalizeImage = (course: Course): Course => {
+    const defaultCourse = INITIAL_COURSES.find(
+      (item) => item.id === course.id
+    );
+
+    if (!defaultCourse) return course;
+
+    const image = course.image || '';
+
+    const isOldPath =
+      !image ||
+      image.includes('/src/assets/') ||
+      image.includes('/assets/') ||
+      image.startsWith('assets/') ||
+      image.startsWith('./assets/');
+
+    return isOldPath
+      ? { ...course, image: defaultCourse.image }
+      : course;
+  };
+
   if (!isFirebaseConfigured) {
-    return getLocalCourses();
+    return getLocalCourses().map(normalizeImage);
   }
+
   try {
     const colRef = collection(db, 'courses');
     const snap = await getDocs(colRef);
+
     if (snap.empty) {
-      // If Firestore courses collection is empty, return local courses without unauthenticated write
-      return getLocalCourses();
+      return getLocalCourses().map(normalizeImage);
     }
+
     const courses: Course[] = [];
+
     snap.forEach((d) => {
-      courses.push(d.data() as Course);
+      courses.push(normalizeImage(d.data() as Course));
     });
-    return courses.length > 0 ? courses.sort((a, b) => (a.id > b.id ? 1 : -1)) : getLocalCourses();
+
+    return courses.length > 0
+      ? courses.sort((a, b) => (a.id > b.id ? 1 : -1))
+      : getLocalCourses().map(normalizeImage);
+
   } catch (error) {
-    // If security rules block unauthenticated reads or project is initializing, fallback gracefully
-    console.warn('Firestore courses read fallback to local courses:', (error as any)?.message || error);
-    return getLocalCourses();
+    console.warn(
+      'Firestore courses read fallback to local courses:',
+      (error as any)?.message || error
+    );
+
+    return getLocalCourses().map(normalizeImage);
   }
 }
 
