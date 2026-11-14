@@ -68,7 +68,7 @@ function AppContent() {
       <Navbar />
 
       {/* 6-Page Multi-Page Route Outlet */}
-      <main className="flex-1 w-full max-w-full">
+      <main className="flex-1 w-full max-w-full pt-[65px] sm:pt-[81px]">
         <Routes>
           {/* 1. Home Page */}
           <Route

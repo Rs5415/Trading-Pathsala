@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
   const displayName = userProfile?.name || user?.displayName || (user ? 'Student' : '');
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0B0B0C] text-white border-b border-[#D4AF37]/30 shadow-md">
+    <header className="fixed top-0 left-0 right-0 w-full z-50 bg-[#0B0B0C] text-white border-b border-[#D4AF37]/30 shadow-md">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
           {/* Logo on the Left - Clean, seamless & stable */}
@@ -117,7 +117,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#121315] border-t border-[#D4AF37]/30 px-4 py-4 space-y-2 shadow-xl">
+        <div className="md:hidden bg-[#121315] border-t border-[#D4AF37]/30 px-4 py-4 space-y-2 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto">
           {navLinks.map((link) => {
             const active = isLinkActive(link.path);
             return (
